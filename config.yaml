@@ -1,0 +1,5 @@
+# Application specific config settings
+LOG_FOLDER: 'log/'
+INFO_COLOR: 'blue'
+ERROR_COLOR: 'red'
+APP: 'cli'

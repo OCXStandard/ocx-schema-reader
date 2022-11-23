@@ -13,14 +13,17 @@ sys.path.insert(0, os.path.abspath('../../'))
 project = 'ocx-schema-reader'
 copyright = 'Copyright (c) 2022 OCX Consortium (https://3docx.org).'
 author = 'Ole Christian Astrup'
-release = '0.1'
+release = '1.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    "sphinx.ext.autodoc",
+    'sphinx.ext.duration',
+    'sphinx.ext.doctest',
     "sphinx.ext.napoleon",
+    "sphinx.ext.autodoc",
+    'sphinx.ext.autosummary',
     "sphinx_autodoc_typehints",
 ]
 

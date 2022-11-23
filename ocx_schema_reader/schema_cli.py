@@ -9,7 +9,7 @@ from tabulate import tabulate
 from collections import defaultdict
 from fuzzywuzzy import fuzz
 from ocx_schema_reader.utils import load_yaml_config, ROOT_DIR, number_table_rows
-from ocx_schema_reader.schema__reader import OcxSchema
+from ocx_schema_reader.schema_reader import OcxSchema
 from ocx_schema_reader.schema_elements import LxmlElement
 
 MODULE_CONFIG = Path(ROOT_DIR) / 'ocx_schema_reader' / 'config.yaml'
@@ -171,7 +171,7 @@ def namespace(ctx):
 
 
 @schema.command(help='Inspect a named schema element. Enter the named ELEMENT to be inspected '
-                     'including any namespace prefix on the form "prefix:Name".'
+                     'including any _namespace prefix on the form "prefix:Name".'
                      ' The output includes all attributes and sub types of the ELEMENT and'
                      ' the ELEMENT super types.')
 @click.pass_context

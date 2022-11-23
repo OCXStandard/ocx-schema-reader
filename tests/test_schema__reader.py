@@ -2,7 +2,7 @@ from unittest import TestCase
 from pathlib import Path
 import yaml
 from ocx_schema_reader.utils import ROOT_DIR
-from ocx_schema_reader.schema__reader import OcxSchema
+from ocx_schema_reader.schema_reader import OcxSchema
 import logging
 from ocx_xml.xml_parser import LxmlParser
 

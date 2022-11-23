@@ -5,7 +5,6 @@ from collections import defaultdict
 from logging import Logger
 from pathlib import Path
 from lxml.etree import Element, QName
-import yaml
 import requests
 from requests import HTTPError
 
@@ -27,11 +26,12 @@ APP = app_config.get('APP')
 
 class OcxSchema:
     """  The OcxSchema provides functionality for parsing the OCX xsd schema and storing all the elements.
+
     Args:
         logger: The main python logger
 
     Attributes:
-        namespace: The dict of all namespaces on the form (prefix, namespace) key-value pairs resulting from
+        _namespace: The dict of all namespaces on the form (prefix, namespace) key-value pairs resulting from
             parsing all schema files. Ref. https://www.w3.org/TR/xml-names/#sec-namespaces
         _ocx_global_elements: Hash table as key-value pairs (tag, OcxSchemaElement)
             for all parsed schema elements
@@ -50,7 +50,7 @@ class OcxSchema:
         self._parser = LxmlParser(logger)
         self.log = logger
         # Default namespace map for the reserved prefix xml. See https://www.w3.org/TR/xml-names/#sec-namespaces
-        self.namespace = {'xml': 'http://www.w3.org/XML/1998/namespace'}
+        self._namespace = {'xml': 'http://www.w3.org/XML/1998/namespace'}
         Path(SCHEMA_FOLDER).mkdir(parents=True, exist_ok=True)
         self._is_parsed = False
         self._local_folder = local_folder
@@ -66,6 +66,7 @@ class OcxSchema:
 
     def _add_global_ocx_element(self, tag: str, element: OcxGlobalElement):
         """ Add a global ocx element to the hash table
+
         Args:
             tag: The hash key
             element: The schema element to add
@@ -76,6 +77,7 @@ class OcxSchema:
 
     def _add_schema_element(self, tag: str, element: Element):
         """ Add a new schema element to the hash table
+
         Args:
             tag: The hash key
             element: The schema element to add
@@ -86,6 +88,7 @@ class OcxSchema:
 
     def _add_schema_type(self, schema_type: str, tag: str):
         """ Add a new schema type to the hash table
+
         Args:
             tag: The hash key
             schema_type: The schema type
@@ -111,6 +114,7 @@ class OcxSchema:
 
     def get_schema_folder(self) -> str:
         """ Return the local folder where the schemas are stored. The local folder is relative to the project root.
+
         Returns:
             The relative path to the local schema folder.
 
@@ -125,6 +129,7 @@ class OcxSchema:
 
     def get_default_schema(self) -> str:
         """ Return the default schema to be parsed.
+
         Returns:
             The default schema url.
 
@@ -133,10 +138,12 @@ class OcxSchema:
 
     def _parse_schema(self, schema_url: str = DEFAULT_SCHEMA) -> bool:
         """ Parse the OCX xsd schema. The method will traverse any referenced (using the tag xs:import)
-                schemas and parse these also. If the referenced schema url is not a local file,
-                the method will download the file before the schema is parsed.
+            schemas and parse these also. If the referenced schema url is not a local file,
+            the method will download the file before the schema is parsed.
+
         Args:
             schema_url: the path or URL to the xsd file
+
         Returns:
             True if all schemas are parsed successfully, else returns False
 
@@ -167,8 +174,8 @@ class OcxSchema:
             n = self._add_namespace(ns)
             # The target namespace for the current schema
             target_ns = self._parser.get_target_namespace()
-            if target_ns not in self.namespace.values():
-                self.log.error(f'The target namespace "{target_ns}" is not registered in the namespace listing {self.namespace}')
+            if target_ns not in self._namespace.values():
+                self.log.error(f'The target _namespace "{target_ns}" is not registered in the _namespace listing {self._namespace}')
                 self._is_parsed = False
                 return False
             # Retrieve the OCX schema version
@@ -177,7 +184,7 @@ class OcxSchema:
                 self._schema_version = version
             self.log.debug(f'Added {n} new namespaces for schema "{schema_url}"')
             if LxmlElement.has_child_with_name(root, 'SchemaChange'):
-                changes = SchemaHelper.get_schema_changes(root)
+                changes = SchemaHelper.find_schema_changes(root)
                 if len(changes) > 0:
                     self._schema_changes = changes
             # Build the look-up tables for all global element types
@@ -202,7 +209,7 @@ class OcxSchema:
                 self._is_parsed = self._parse_schema(url)
                 if self._is_parsed:
                     if ns not in list(self.get_namespaces().values()):
-                        self.log.error(f'Mismatched namespace "{ns}" in xsd with url: "{url}"')
+                        self.log.error(f'Mismatched _namespace "{ns}" in xsd with url: "{url}"')
                 else:
                     break
         return self._is_parsed
@@ -234,7 +241,8 @@ class OcxSchema:
 
     def _process_attributes(self, ocx: OcxGlobalElement):
         """ Process all xs:attributes of the global element
-        Arguments:
+
+        Args:
             ocx: The parent OCX element
 
         """
@@ -281,7 +289,8 @@ class OcxSchema:
 
     def _process_children(self, ocx: OcxGlobalElement):
         """ Process all xs:element of the global element
-        Arguments:
+
+        Args:
             ocx: The parent OCX element
 
         """
@@ -337,6 +346,7 @@ class OcxSchema:
 
     def _get_element(self, tag: str) -> Union[Element, None]:
         """ Private function to get the ``etree.Element`` with the key 'tag'
+
         Returns:
             The ``OcxGlobalElement`` instance
 
@@ -357,10 +367,10 @@ class OcxSchema:
         """
         name = LxmlElement.strip_namespace_prefix(type)
         namespace = None
-        if LxmlElement.namespace_prefix(type) in self.namespace:
-            namespace = self.namespace[LxmlElement.namespace_prefix(type)]
+        if LxmlElement.namespace_prefix(type) in self._namespace:
+            namespace = self._namespace[LxmlElement.namespace_prefix(type)]
         else:
-            self.log.debug(f'The type {type} has an unknown namespace prefix')
+            self.log.debug(f'The type {type} has an unknown _namespace prefix')
             return None, None
         tag = SchemaHelper.unique_tag(name, namespace)
         if tag in self._builtin_xs_types:
@@ -375,9 +385,9 @@ class OcxSchema:
     def _find_parents(self, child_tag: str, ocx: OcxGlobalElement):
         """ Recursively find all ancestors of the global element ``OxcGlobalElement``
 
-            Arguments:
-                child_tag: The unique tag of a child
-                ocx: The global element (the root to start the search from)
+        Args:
+            child_tag: The unique tag of a child
+            ocx: The global element (the root to start the search from)
 
         """
         # Look up the xsd element
@@ -405,7 +415,7 @@ class OcxSchema:
         """ Recursively find all the xsd schema parents of a global xsd element(parent, grandparent ...)
             The parents found is added to the ocx instance (child)
 
-            Arguments:
+            Args:
                 ocx: The global ocx instance to search from
 
         """
@@ -422,15 +432,15 @@ class OcxSchema:
             type: the ocx type on the form ``prefix:name``
 
         Returns:
-            The ``OcxGlobalElement``
+            The ``OcxGlobalElement`` instance
 
         """
         nsprefix = LxmlElement.namespace_prefix(type)
         name = LxmlElement.strip_namespace_prefix(type)
-        if nsprefix not in self.namespace.values():
-            for prefix in self.namespace:
+        if nsprefix not in self._namespace.values():
+            for prefix in self._namespace:
                 if prefix == LxmlElement.namespace_prefix(type):
-                    namespace = self.namespace[prefix]
+                    namespace = self._namespace[prefix]
                     tag = SchemaHelper.unique_tag(name, namespace)
                     if tag not in self._all_schema_elements.keys():
                         self.log.debug(f'{__class__}: The tag {tag} is not in the look-up table')
@@ -438,7 +448,7 @@ class OcxSchema:
                     else:
                         return self._ocx_global_elements[tag]
         else:
-            self.log.debug(f'{__class__}: The namespace prefix  "{nsprefix}" is not defined')
+            self.log.debug(f'{__class__}: The _namespace prefix  "{nsprefix}" is not defined')
             return None
 
     def _get_prefix_from_namespace(self, namespace: str) -> str:
@@ -449,10 +459,10 @@ class OcxSchema:
 
         """
         prefix = 'None'
-        if namespace not in list(self.namespace.values()):
-            self.log.debug(f'The namespace {namespace} is not in the global namespace dict')
-        for item in self.namespace:
-            if namespace == self.namespace[item]:
+        if namespace not in list(self._namespace.values()):
+            self.log.debug(f'The _namespace {namespace} is not in the global _namespace dict')
+        for item in self._namespace:
+            if namespace == self._namespace[item]:
                 prefix = item
         return prefix
 
@@ -463,16 +473,16 @@ class OcxSchema:
             The number of new namespaces added
 
         """
-        ns = self.namespace
+        ns = self._namespace
         # Check if any keys exists
         for prefix in ns:
             if prefix in namespace.keys():
-                self.log.debug(f'The namespace prefix "{prefix}" already exists. '
-                               f'Dropping new namespace {namespace[prefix]} from the namespace table')
-                self.log.debug(f'The existing namespace with prefix "{prefix}" is: {self.namespace[prefix]}')
+                self.log.debug(f'The _namespace prefix "{prefix}" already exists. '
+                               f'Dropping new _namespace {namespace[prefix]} from the _namespace table')
+                self.log.debug(f'The existing _namespace with prefix "{prefix}" is: {self._namespace[prefix]}')
                 del namespace[prefix]
-        self.namespace = {**self.namespace, **namespace}
-        return len(self.namespace) - len(ns)
+        self._namespace = {**self._namespace, **namespace}
+        return len(self._namespace) - len(ns)
 
     def get_namespaces(self) -> Dict:
         """ The parsed namespaces'
@@ -481,10 +491,10 @@ class OcxSchema:
             The dict of namespaces as (namespace,prefix) key-value pairs
 
         """
-        return self.namespace
+        return self._namespace
 
     def _get_all_schema_elements(self) -> Dict:
-        """ All lxml.etree.Element schema elements
+        """ All ``lxml.etree.Element`` schema elements
 
         Returns:
             The dict of all global xsd lxml.etree.Element elements with tag as key
@@ -494,7 +504,6 @@ class OcxSchema:
 
     def _sort_schema_elements(self):
         """ Sorts the schema hash table
-
 
         """
         sorted_dict = sorted(self._all_schema_elements.items(), key=lambda kv: kv[0])
@@ -535,7 +544,7 @@ class OcxSchema:
         """ The OCX schema change history
 
         Returns:
-            A dict of all schema changes for all schema versions
+            The schema changes for all schema versions
 
         """
         return self._schema_changes
@@ -574,6 +583,7 @@ class OcxSchema:
             The list of unique tags for all etree.Element of type ``attribute``
 
         """
+
         return self._get_schema_types('attribute')
 
     def _get_schema_attribute_groups(self) -> List[str]:
@@ -581,16 +591,14 @@ class OcxSchema:
 
         Returns:
             The list of all etree.Element of type ``attributeGroup``
-
         """
         return self._get_schema_types('attributeGroup')
 
-    def tbl_summary(self) -> dict:
+    def tbl_summary(self) -> Dict:
         """ The summary of the parsed schema and any referenced schemas'
 
         Returns:
-            A dict containing a schema summary
-
+            The schema summary
         """
         table = defaultdict(list)
         table['Item'].append('Schema Version')
@@ -601,69 +609,120 @@ class OcxSchema:
             table['Value'].append(len(self._all_types[type]))
         #
         table['Item'].append('Number of namespaces')
-        table['Value'].append(len(self.namespace))
+        table['Value'].append(len(self._namespace))
         # Loop over namespaces
-        for ns in self.namespace:
-            table['Value'].append(self.namespace[ns])
+        for ns in self._namespace:
+            table['Value'].append(self._namespace[ns])
             table['Item'].append(ns)
 
         return table
 
-    def tbl_attribute_groups(self) -> dict:
+    def tbl_attribute_groups(self) -> Dict:
         """ The table of all parsed ``attributeGroup`` elements in the schema and any referenced schemas'
 
         Returns:
-            A dict of the ``attributeGroup`` elements
+            A dict of the ``attributeGroup`` elements with heading keys:
 
-        """
+        .. list-table:: Heading keys
+            :widths: 25 25 25 25 25
+
+            * - Prefix
+              - Name
+              - Tag
+              - Base
+              - Source line
+       """
+
         table = defaultdict(list)
         elements = self._get_schema_attribute_groups()
         for tag in elements:
             self._types_table(table, tag)
         return table
 
-    def tbl_simple_types(self) -> dict:
+    def tbl_simple_types(self) -> Dict:
         """ The table of all parsed ``simpleType`` elements in the schema and any referenced schemas'
         Returns:
-            A dict of the ``simpleType`` elements
 
+            A dict of the ``simpleType`` elements with heading keys:
+
+        .. list-table:: Heading keys
+            :widths: 25 25 25 25 25
+
+            * - Prefix
+              - Name
+              - Tag
+              - Base
+              - Source line
         """
+
         table = defaultdict(list)
         elements = self._get_schema_simple_types()
         for tag in elements:
             self._types_table(table, tag)
         return table
 
-    def tbl_attribute_types(self) -> dict:
+    def tbl_attribute_types(self) -> Dict:
         """ The table of all parsed attribute elements in the schema and any referenced schemas'
         Returns:
-            A dict of the attribute elements
 
+            A dict of the ``attribute`` elements with heading keys:
+
+        .. list-table:: Heading keys
+            :widths: 25 25 25 25 25
+
+            * - Prefix
+              - Name
+              - Tag
+              - Base
+              - Source line
         """
+
         table = defaultdict(list)
         elements = self._get_schema_attributes()
         for tag in elements:
             self._types_table(table, tag)
         return table
 
-    def tbl_element_types(self) -> dict:
+    def tbl_element_types(self) -> Dict:
         """ The table of all parsed elements of type element in the schema and any referenced schemas'
+
         Returns:
-            A dict of the simpleType elements
+            A dict of the ``element`` elements with heading keys:
+
+             .. list-table:: Heading keys
+               :widths: 25 25 25 25 25
+
+               * - Prefix
+                 - Name
+                 - Tag
+                 - Base
+                 - Source line
 
         """
+
         table = defaultdict(list)
         elements = self._get_schema_elements()
         for tag in elements:
             self._types_table(table, tag)
         return table
 
-    def tbl_complex_types(self) -> dict:
+    def tbl_complex_types(self) -> Dict:
         """ The table of all parsed complexType elements in the schema and any referenced schemas'
+
         Returns:
-            A dict of the complexType elements
+            A dict of the ``complexType`` elements with heading keys:
+
+            .. list-table:: Heading keys
+                :widths: 25 25 25 25 25
+
+                *   - Prefix
+                    - Name
+                    - Tag
+                    - Base
+                    - Source line
 
         """
+
         table = defaultdict(list)
         elements = self._get_schema_complex_types()
         for tag in elements:
@@ -679,7 +738,7 @@ class OcxSchema:
         qn = QName(tag)
         prefix = self._get_prefix_from_namespace(qn.namespace)
         if prefix == 'None':
-            self.log.error(f'Tag {tag} has an unknown namespace')
+            self.log.error(f'Tag {tag} has an unknown _namespace')
         table['Prefix'].append(prefix)
         table['Name'].append(LxmlElement.get_name(e))
         table['Tag'].append(tag)

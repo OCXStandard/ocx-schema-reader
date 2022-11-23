@@ -1,7 +1,7 @@
-lxml_wrapper
-============
+ocx-schema-reader
+=================
 
 .. toctree::
    :maxdepth: 4
 
-   lxml_wrapper
+   ocx_schema_reader

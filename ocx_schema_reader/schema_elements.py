@@ -1,6 +1,6 @@
 #  Copyright (c) 2022 OCX Consortium (https://3docx.org). See the LICENSE.
 
-from typing import Dict, List
+from typing import Dict, List, Union
 from collections import defaultdict
 from logging import Logger
 from lxml.etree import Element, QName
@@ -16,13 +16,13 @@ class OcxAttribute:
         xs_attribute: The lxml.etree.Element class
 
     Attributes:
-        _name : TThe attribute name
+        _name : The attribute name
         _type : The attribute type
         _use : Whether the attribute is optional or required
         _fixed: Whether the attribute has a fixed value if any
         _default: The deaflalt value of the attribute if any
         _annotation: The attribute description
-        _is_global:
+        _is_global: True if the element is global, False otherwise
 
     """
 
@@ -38,6 +38,7 @@ class OcxAttribute:
 
     def get_use(self) -> str:
         """ The xs:attribute use (optional or required)
+
         Returns:
             Returns either 'required' or 'optional'
 
@@ -46,6 +47,7 @@ class OcxAttribute:
 
     def get_fixed(self) -> str:
         """ The fixed value of the xs:attribute
+
         Returns:
             Returns the fixed value of the attribute or an empty string if None
 
@@ -57,6 +59,7 @@ class OcxAttribute:
 
     def get_default(self) -> str:
         """ The default value of the xs:attribute
+
         Returns:
             Returns the default value of the attribute or an empty string if None
 
@@ -68,30 +71,34 @@ class OcxAttribute:
 
     def get_name(self) -> str:
         """ The name of the xs:attribute
+
         Returns:
-            Returns the name of the attribute
+            The name of the attribute
 
         """
         return self._name
 
     def get_type(self) -> str:
         """ The type of the xs:attribute
+
         Returns:
-            Returns the attribute type
+            The attribute type
 
         """
         return self._type
 
     def get_description(self) -> str:
         """ The annotation string of the xs:attribute
+
         Returns:
-            Returns the attribute description text
+            The attribute description text
 
         """
         return self._annotation
 
     def put_description(self, text: str):
         """ Set the xs:attribute documentation string
+
         Returns:
             None
 
@@ -100,6 +107,7 @@ class OcxAttribute:
 
     def put_use(self, use: str):
         """ Set the xs:attribute use string
+
         Returns:
             None
 
@@ -108,6 +116,7 @@ class OcxAttribute:
 
     def put_type(self, type: str):
         """ Set the xs:attribute type string
+
         Returns:
             None
 
@@ -116,6 +125,7 @@ class OcxAttribute:
 
     def put_name(self, name: str):
         """ Set the xs:attribute name
+
         Returns:
             None
 
@@ -126,29 +136,38 @@ class OcxAttribute:
         """ A dictionary of the OcxAttribute values
 
         Returns:
-            A table dictionary of all OcxAttribute attribute values with columns:
-            |Attribute|Type|Use|Default|Fixed|Description|
-            |---------|----|---|-------|-----|-----------|
+            table: A dictionary of all ``OcxAttribute`` attribute values with columns:
+
+            .. list-table:: Heading titles
+               :widths: 25 25 25 25 25 50
+
+               * - Attribute
+                 - Type
+                 - Use
+                 - Default
+                 - Fixed
+                 - Description
+
         """
         return {'Attribute': self.get_name(), 'Type': self.get_type(), 'Use': self.get_use(),
                 'Default': self.get_default(), 'Fixed': self.get_fixed(), 'Description': self.get_description()}
 
 
 class OcxChildElement:
-    """  Class capturing the OCX xsd schema definition of a child or sub element  xs:element.
+    """  Class capturing the OCX xsd schema definition of a child or sub element ``xs:element``.
 
     Args:
         xs_element: The lxml.etree.Element class
 
     Attributes:
         _tag: The unique tag of th schema element
-        _element: The xs:element instance
+        _element: The ``xs:element`` instance
         _name : The attribute name
         _type : The attribute type
         _use : Whether the child is optional or required
-        _cardinality : Whether the attribute is optional or requiredThe cardinality of the element
+        _cardinality : The cardinality of the element
         _annotation: The element description
-        _is_choice: The child element is an xs:choice
+        _is_choice: The child element is a ``xs:choice``
 
     """
 
@@ -164,8 +183,9 @@ class OcxChildElement:
 
     def get_use(self) -> str:
         """ Mandatory or optional sub element
+
         Returns:
-            Returns either 'req. or 'opt.'
+            The element use, either ``req.`` or ``opt.``
 
         """
         lower, upper = self._cardinality
@@ -175,10 +195,10 @@ class OcxChildElement:
             return 'req.'
 
     def get_cardinality(self) -> str:
-        """ Get the cardinality of the OcxChildElement
+        """ Get the cardinality of the ``OcxChildElement``
 
         Returns:
-            The cardinality as sting represented by [lower, upper]
+            The cardinality as sting represented by ``[lower, upper]``
 
         """
         lower, upper = self._cardinality
@@ -188,30 +208,34 @@ class OcxChildElement:
 
     def get_name(self) -> str:
         """ The name of the xs:attribute
+
         Returns:
-            Returns the name of the attribute
+            The name of the attribute
 
         """
         return self._name
 
     def get_type(self) -> str:
         """ The type of the xs:attribute
+
         Returns:
-            Returns the attribute type
+            The attribute type
 
         """
         return self._type
 
     def get_description(self) -> str:
         """ The annotation text of the element
+
         Returns:
-            Returns the description of the element
+            The description of the element
 
         """
         return self._annotation
 
     def put_description(self, text: str):
         """ Set the xs:attribute documentation string
+
         Returns:
             None
 
@@ -220,6 +244,7 @@ class OcxChildElement:
 
     def put_use(self, use: str):
         """ Set the xs:attribute use string
+
         Returns:
             None
 
@@ -228,6 +253,7 @@ class OcxChildElement:
 
     def put_reference(self, tag: str):
         """ Set the tag reference to the global schema element
+
         Returns:
             None
 
@@ -238,7 +264,7 @@ class OcxChildElement:
         """ Whether the element mandatory or not
 
         Returns:
-            Returns True if the element is mandatory, False otherwise
+            True if the element is mandatory, False otherwise
 
         """
         lower, upper = self._cardinality
@@ -248,7 +274,7 @@ class OcxChildElement:
         """ Whether the element is a choice or not
 
         Returns:
-            Returns True if the element is a choice, False otherwise
+            True if the element is a choice, False otherwise
 
         """
         return self._is_choice
@@ -257,13 +283,14 @@ class OcxChildElement:
         """ Whether the element is a global schema element
 
         Returns:
-            Returns True if the element is global, False otherwise
+            True if the element is global, False otherwise
 
         """
         return self._tag != ''
 
     def put_type(self, type: str):
         """ Set the xs:attribute type string
+
         Returns:
             None
 
@@ -272,6 +299,7 @@ class OcxChildElement:
 
     def put_name(self, name: str):
         """ Set the xs:attribute name
+
         Returns:
             None
 
@@ -279,12 +307,19 @@ class OcxChildElement:
         self._name = name
 
     def attributes_to_dict(self) -> Dict:
-        """ A dictionary of the OcxChildElement values
+        """ A dictionary of the ''OcxChildElement'' values
 
         Returns:
-            A table dictionary of all OcxAttribute attribute values with columns:
-            |Child|Type|Use|Cardinality|Choice|Global|Description|
-            |-----|----|---|-----------|------|------|-----------|
+            table: dictionary of all OcxAttribute attribute values with columns:
+
+            .. list-table:: Heading titles
+               :widths: 25 25 25 25 50
+
+               * - Child
+                 - Cardinality
+                 - Choice
+                 - Global
+                 - Description
 
         """
         return {'Child': self.get_name(), 'Type': self.get_type(), 'Use': self.get_use(),
@@ -295,7 +330,7 @@ class OcxChildElement:
 
 
 class OcxGlobalElement:
-    """  Global schema element class capturing the xsd schema definition of a global xs:element.
+    """  Global schema element class capturing the xsd schema definition of a global ``xs:element``.
 
     Args:
         xsd_element: The lxml.etree.Element class
@@ -303,14 +338,14 @@ class OcxGlobalElement:
 
     Attributes:
         log: The Python logger instance
-        _element: The lxml.Element instance
+        _element: The ``lxml.Element`` instance
         _attributes: The attributes of the global element including the attributes of all schema supertypes
-        _reference: The OcxGlobalElement hase reference to a global schema element. 'None' if no reference
-        _tag: The unique global tag of the OcXElement
+        _reference: The ``OcxGlobalElement`` hase reference to a global schema element. 'None' if no reference
+        _tag: The unique global tag of the ``OcXGlobalElement``
         _parents: Hash table of references to all parent schema types with tag as key
         _children: List of references to all children schema types with tag as key.
                         Includes also children of all super-types.
-        -assertions: List of any assertions associated with the xs:element
+        -assertions: List of any assertions associated with the ``xs:element``
 
     """
 
@@ -330,7 +365,7 @@ class OcxGlobalElement:
         """ Add attributes to the global element
 
         Arguments:
-            attribute : The OcxAttribute instance to be added
+            attribute : The ``OcxAttribute`` instance to be added
 
         """
 
@@ -340,7 +375,7 @@ class OcxGlobalElement:
         """ Add a child of an OCX global element'
 
         Arguments:
-            child: The added  child instance of a OcxChildElement class
+            child: The added  child instance of a ``OcxChildElement`` class
 
         Returns:
             Nothing
@@ -361,7 +396,7 @@ class OcxGlobalElement:
         self._assertions.append(test)
 
     def has_assertion(self) -> bool:
-        """ Whether the elemnt has assertions or not'
+        """ Whether the element has assertions or not'
 
        Returns:
             Tru if the global element as assertions, False otherwise
@@ -373,8 +408,8 @@ class OcxGlobalElement:
         """ Add a parent element
 
         Arguments:
-            tag (str): The unique tag of the parent element
-            parent (lxml.etree.Element): The parent xsd schema element
+            tag: The unique tag of the parent element
+            parent: The parent xsd schema element
 
         Returns:
             None
@@ -386,7 +421,7 @@ class OcxGlobalElement:
         """ Get all my attributes
 
         Returns:
-            Return all parents as a dict of key-value pairs (tag, Element)
+            Return all parents as a dict of key-value pairs ``(tag, Element)``
 
         """
         return self._parents
@@ -407,13 +442,13 @@ class OcxGlobalElement:
         """ Get all my assertions
 
         Returns:
-            Return all assertion tests in a list
+            Assertion tests in a list
 
         """
         return self._assertions
 
     def put_child(self, tag: str, child: OcxChildElement):
-        """ Add a child element of type OCxChildElement
+        """ Add a child element of type ``OCxChildElement``
 
         Arguments:
             tag: The unique tag of the parent element
@@ -429,16 +464,16 @@ class OcxGlobalElement:
         """ Get all my children xsd types
 
         Returns:
-            Return all children as a dict of key-value pairs (tag, OCXChildElement)
+            Return all children as a dict of key-value pairs ``(tag, OCXChildElement)``
 
         """
         return self._children
 
     def get_namespace(self) -> str:
-        """ The element namespace
+        """ The element _namespace
 
         Returns:
-            The namespace of the global schema element as a str
+            The _namespace of the global schema element as a str
 
         """
         return self._namespace
@@ -482,7 +517,7 @@ class OcxGlobalElement:
         return SchemaHelper.get_type(self._element)
 
     def get_prefix(self) -> str:
-        """ The global element namespace prefix
+        """ The global element _namespace prefix
 
         Returns:
             The type of the global schema element as a str
@@ -495,7 +530,7 @@ class OcxGlobalElement:
             return LxmlElement.namespace_prefix(type)
 
     def get_schema_element(self) -> Element:
-        """ Get the schema xsd element of the OcxSchemeElement object
+        """ Get the schema xsd element of the ``OcxSchemeElement`` object
 
         Returns:
             My xsd schema element
@@ -516,7 +551,7 @@ class OcxGlobalElement:
         """ Get the reference to a global element
 
         Returns:
-            tag (str): The unique tag to the global referenced element
+            tag: The unique tag to the global referenced element
 
         """
         return self._reference
@@ -525,7 +560,7 @@ class OcxGlobalElement:
         """ Assign the reference to a global element
 
         Returns:
-            tag (str): The unique tag to the global referenced element
+            tag: The unique tag to the global referenced element
 
         """
         self._reference = tag
@@ -546,7 +581,7 @@ class OcxGlobalElement:
         """ Whether the element has a reference or not
 
         Returns:
-            is_reference : Returns True if the element has a reference, False otherwise
+            is_reference : True if the element has a reference, False otherwise
 
         """
         return LxmlElement.is_reference(self._element)
@@ -564,7 +599,7 @@ class OcxGlobalElement:
         """ Whether the element is a choice or not
 
         Returns:
-            Returns True if the element is a choice, False otherwise
+            True if the element is a choice, False otherwise
 
         """
         return LxmlElement.is_choice(self._element)
@@ -573,7 +608,7 @@ class OcxGlobalElement:
         """ Whether the element is part of a substitutionGroup
 
         Returns:
-            Returns True if the element is a substitutionGroup, False otherwise
+            True if the element is a substitutionGroup, False otherwise
 
         """
         return LxmlElement.is_substitution_group(self._element)
@@ -582,16 +617,16 @@ class OcxGlobalElement:
         """ Whether the element is abstract
 
         Returns:
-            Returns True if the element is abstract, False otherwise
+            True if the element is abstract, False otherwise
 
         """
         return LxmlElement.is_abstract(self._element)
 
-    def get_substitution_group(self) -> str:
+    def get_substitution_group(self) -> Union[str, None]:
         """ Return the name of the substitutionGroup
 
         Returns:
-            The name of the substitutionGroup, None otherwise
+            The name of the ``substitutionGroup``, None otherwise
 
         """
         return LxmlElement.get_substitution_group(self._element)
@@ -600,7 +635,7 @@ class OcxGlobalElement:
         """ The global schema element unique tag
 
         Returns:
-            The element tag as a str: {prefix}name
+            The element tag on the form  ``{prefix}name``
 
         """
         return self._tag
@@ -609,7 +644,7 @@ class OcxGlobalElement:
         """ The element's use, required or optional
 
         Returns:
-            The element use as a string, "req." if mandatory, else "opt"
+            The element use:  ``req.`` if mandatory, else ``opt``
 
         """
         use = 'opt'
@@ -618,13 +653,21 @@ class OcxGlobalElement:
         return use
 
     def get_properties(self) -> Dict:
-        """ A dictionary of all OcxGlobalElement property values
+        """ A dictionary of all ``OcxGlobalElement`` property values
 
         Returns:
-            A table dictionary of all OcxGlobalElement property values with the columns:
+           table: A dictionary of property values with heading keys:
 
-            |Name|Type|Use|Cardinality|Fixed|Description|
-            |----|----|---|-----------|-----------------|
+            .. list-table:: Heading keys
+               :widths: 25 25 25 25 25 50
+
+               * - Name
+                 - Type
+                 - Use
+                 - Cardinality
+                 - Fixed
+                 - Description
+
         """
         table = defaultdict(list)
         table['Name'].append(self.get_name())
@@ -635,11 +678,21 @@ class OcxGlobalElement:
         return table
 
     def attributes_to_dict(self) -> Dict:
-        """ A dictionary of all OcxGlobalElement attribute values
+        """ A dictionary of all ``OcxGlobalElement`` attribute values
+
         Returns:
-            A table dictionary of all OcxGlobalElement attribute values with columns:
-            |Attribute|Type|Use|Default|Fixed|Description|
-            |---------|----|---|-------|-----|-----------|
+            table: A dictionary of attribute values with heading keys
+
+            .. list-table:: Heading keys
+               :widths: 25 25 25 25 25 50
+
+               * - Attribute
+                 - Type
+                 - Use
+                 - Default
+                 - Fixed
+                 - Description
+
         """
         table = defaultdict(list)
         for attr in self._attributes:
@@ -649,11 +702,20 @@ class OcxGlobalElement:
         return table
 
     def children_to_dict(self) -> Dict:
-        """ A dictionary of all OcxGlobalElement children values
+        """ A dictionary of all ``OcxGlobalElement`` children values
+
         Returns:
-            A table dictionary of all OcxGlobalElement attribute values with columns:
-            |Child|Type|Use|Cardinality|Description|
-            |-----|----|---|-----------|-----------|
+            table: A dictionary of attribute values with heading keys:
+
+            .. list-table:: Heading keys
+               :widths: 25 25 25 25 50
+
+               * - Child
+                 - Type
+                 - Use
+                 - Cardinality
+                 - Description
+
         """
         table = defaultdict(list)
         for child in self._children:

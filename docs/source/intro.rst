@@ -1,12 +1,13 @@
 Introduction
 ============
 
-The ``xml_wrapper`` is using the  python `lxml library <https://lxml.de/>`_  and implementing useful features when parsing the [Open Class 3D Exchange (OCX)](https://github.com/OCXStandard/OCX_Schema) schema.
+The ``ocx-schema-reader`` is a command line interface (cli) to inspect a version of the Open Class 3D Exchange (OCX) XSD schema.
 
 Motivation
 **********
 
-The package implements two classes encapsulating common search scenarios for working with the OCX schema XSD.
+The application enables a more human-friendly way to review an XSD schema without the need for using an XML tool as XMLSpy or Oxygen XML.
+
 
 Limitations
 ***********

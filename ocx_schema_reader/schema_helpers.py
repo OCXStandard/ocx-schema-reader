@@ -1,7 +1,7 @@
 #  Copyright (c) 2022 OCX Consortium (https://3docx.org). See the LICENSE.
 
+from typing import Dict, Union
 from collections import defaultdict
-from logging import Logger
 import re
 
 from lxml.etree import Element, QName, ElementTextIterator
@@ -13,18 +13,21 @@ class SchemaHelper:
     """ A utility class for retrieving OCX attributes and information from an OCX xsd element """
     @classmethod
     def is_reference(cls, element:Element) -> bool:
-        """ Check if the xsd element references a global element
+        """ Is a reference or not
+
         Returns:
-            True if the element has a reference, False otherwise
+            True if the element is a reference, False otherwise
 
         """
-        return cls.get_reference(element) is not 'None'
+        reference = cls.get_reference(element) is not 'None'
+        return reference
 
     @classmethod
-    def get_reference(cls, element:Element) -> str:
-        """ The referenced element
+    def get_reference(cls, element: Element) -> Union[str, None]:
+        """ The element reference
+
         Returns:
-            The reference (unique tag) to a global element as a str on the form prefix:name.
+            The reference to a global element on the form ``prefix:name``.
             Returns None if the element is not a reference.
 
         """
@@ -35,11 +38,12 @@ class SchemaHelper:
         return ref
 
     @staticmethod
-    def get_type(element:Element) -> str:
-        """ The element type given by the element attribute or by its complexContent
+    def get_type(element: Element) -> str:
+        """ The element type given by the element attribute or by its ``complexContent``
+
         Returns:
-            The type of the global element as a str on the form prefix:name
-            If the element has no type, 'untyped' is returned.
+            The global element type on the form ``prefix:name``.
+            If the element has no type, ``untyped`` is returned.
 
         """
         schema_type = None
@@ -87,13 +91,14 @@ class SchemaHelper:
 
     @staticmethod
     def unique_tag(name: str, namespace: str) -> str:
-        """ A unique global tag from the element name and namespace
+        """ A unique global tag from the element name and _namespace
 
         Args:
             name: The name of the element
-            namespace: The namespace
+            namespace: The _namespace
+
         Returns:
-            global element tag as a str on the form '{namespace}name'
+            A unique element tag on the form ``{_namespace}name``
 
         """
 
@@ -106,8 +111,9 @@ class SchemaHelper:
 
         Args:
             root: The root element of the schema
+
         Returns:
-            The version string of the OCX schema
+            The  version of the OCX schema
 
         """
         version = 'Missing'
@@ -117,9 +123,25 @@ class SchemaHelper:
             version = element[0].get('fixed')
         return version
 
-
     @staticmethod
-    def get_schema_changes(root: Element) -> dict:
+    def find_schema_changes(root: Element) -> dict:
+        """ Find any schema version changes with tag ``SchemaChange``
+
+        Args:
+            root: The root element of the schema
+
+        Returns:
+            A dict of all schema changes with keys:
+
+            .. list-table:: Heading keys
+               :widths:  25 25 25 50
+
+               * - Version
+                 - Author
+                 - Date
+                 - Description
+
+        """
         schema_changes = defaultdict(list)
         changes = LxmlElement.find_all_children_with_name(root, 'SchemaChange')
         for change in changes:
@@ -136,232 +158,3 @@ class SchemaHelper:
                     text = re.sub("[\n\t\r]", "", description)
                 schema_changes["Description"].append(text)
         return schema_changes
-
-
-class SchemaCardinality:
-    """ Class establishing the cardinality of an OCX element """
-
-    def __init__(self, element: Element):
-        self.element = element  # Always the local element
-        self.cardinality = LxmlElement
-        self.lower = ""
-        self.upper = ""
-        self.default = ""
-        self.fixed = ""
-        self.choice = False
-        self.cardinality(element)
-
-    def cardinality(self, element):
-        """ Establish the cardinality of the Element
-
-        Args:
-            element: the etree.Element instance
-
-        """
-        qn = QName(element)
-        attributes = element.attrib
-        if qn.localname == "element":
-            if "minOccurs" in attributes:
-                self.lower = attributes["minOccurs"]
-                if self.lower == "0":
-                    self.use = "opt."
-                else:
-                    self.use = "req."
-                    if "minOccurs" in attributes:
-                        self.lower = attributes["minOccurs"]
-                    else:
-                        self.lower = "1"
-            else:
-                self.use = "req."
-                self.lower = "1"
-            if "maxOccurs" in attributes:
-                self.upper = attributes["maxOccurs"]
-            else:
-                self.upper = "1"
-            # Find the closest sequence or choice ancestor which overrules mandatory use
-            for item in self.element.iterancestors("{*}sequence", "{*}choice"):
-                attributes = item.attrib
-                qn = QName(item)
-                if qn.localname == "choice":
-                    self.choice = True
-                if "minOccurs" in attributes:
-                    if attributes["minOccurs"] == "0":
-                        self.use = "opt."
-                        self.lower = "0"
-                if "maxOccurs" in attributes:
-                    self.upper = attributes["maxOccurs"]
-                break
-        if qn.localname == "attribute":
-            self.upper = "1"
-            attributes = self.element.attrib
-            if "use" in attributes:
-                if attributes["use"] == "required":
-                    self.use = "req."
-                    self.lower = "1"
-            else:
-                self.use = "opt."
-                self.lower = "0"
-            if "default" in attributes:
-                self.default = attributes["default"]
-            if "fixed" in attributes:
-                self.fixed = attributes["fixed"]
-        return
-
-    def get_cardinality(self) -> str:
-        """ The cardinality of the Element
-
-        Returns:
-            The cardinality of the element as a str on the form [lower,upper]
-
-        """
-        if self.upper == "unbounded":
-            self.upper = "\u221E"  # UTF-8 Infinity symbol
-        return "[" + self.lower + "," + self.upper + "]"
-
-    def is_mandatory(self) -> bool:
-        if self.use == "req.":
-            return True
-        else:
-            return False
-
-    def is_choice(self) -> bool:
-        """ If the Element is a choice or not
-
-        Returns:
-            True if the Element is a xs:choice, False otherwise
-
-        """
-        return self.choice
-
-    def put_choice(self, choice: bool):
-        """ Define wheter the element is a choice or not
-
-        Args:
-            choice: True if the element is an xs:choice, False otherwise
-
-        """
-
-        self.choice = choice
-
-
-class SchemaAttribute:
-    def __init__(self, element: Element, tag: str, logger: Logger):
-        self.schema = None
-        self.log = logger
-        self.element = element
-        self.tag = tag
-        self.namespace = element.nsmap
-        #        object = SchemaType(element, schema)
-        self.type = object.get_type()
-        self.name = object.get_name()
-        self.referencedElement = object.get_referenced_element()
-        # The element cardinality
-        self.cardinalityObject = Cardinality(element, self.referencedElement)
-        # The element documentation
-        # annotation_object = Annotation(
-        #     self.get_name(), self.element, self.referencedElement, logger
-        # )
-        self.annotation = annotation_object.find_annotation(self.referencedElement)
-
-
-    def put_annotation(self, text: str):
-        """ Override the element documentation using any locally declared annotation
-        Args:
-            text: The annotation string
-        """
-        self.annotation = text
-
-
-    def get_cardinality_object(self) -> SchemaCardinality:
-        return self.cardinalityObject
-
-        # Used to override the cardinality
-
-
-    def put_cardinality(self, cardinality: SchemaCardinality):
-        self.cardinalityObject = cardinality
-
-
-    def get_annotation(self) -> str:
-        """ Get the element annotation string
-         Returns:
-             The annotation string
-         """
-
-        return self.annotation
-
-
-    def get_type(self) -> str:
-        return self.type
-
-
-    def get_name(self) -> str:
-        return self.name
-
-
-    def is_mandatory(self) -> bool:
-        if (
-                self.get_typed_name() in self.schema.mandatoryElements
-        ):  # Force mandatory elements
-            return True
-        else:
-            return self.cardinalityObject.is_mandatory()
-
-
-    def is_choice(self) -> bool:
-        return self.cardinalityObject.is_choice()
-
-
-    def put_choice(self, choice: bool):
-        self.cardinalityObject.put_choice(choice)
-
-
-    def get_cardinality(self) -> str:
-        return self.cardinalityObject.get_cardinality()
-
-
-    def get_use(self) -> str:
-        return self.cardinalityObject.use
-
-
-    def get_prefix(self) -> str:
-        return ns_prefix(self.get_type())
-
-
-    def get_nsmap(self) -> dict:
-        return self.namespace
-
-
-    def get_typed_name(self) -> str:
-        prefix = self.get_prefix()
-        name = self.get_name()
-        if prefix is not None:
-            return prefix + ":" + name
-        else:
-            return name
-
-
-    def get_tag(self) -> str:
-        if self.tag == "None":
-            prefix = self.get_prefix()
-            nsmap = self.get_nsmap()
-            if prefix in nsmap:
-                tag = nsmap[prefix]
-            else:
-                tag = "*"
-            return "{" + tag + "}" + self.get_name()
-        else:
-            return self.tag
-
-
-    def is_abstract(self) -> bool:
-        if "abstract" in self.element.attrib:
-            return True
-        else:
-            return False
-
-        def get_default(self):
-            return self.cardinalityObject.default
-
-        def get_fixed(self):
-            return self.cardinalityObject.fixed

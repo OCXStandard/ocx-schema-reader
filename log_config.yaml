@@ -1,0 +1,28 @@
+formatters:
+  fh:
+    datefmt: '%d-%m-%Y %I:%M:%S'
+    format: '%(asctime)s : %(levelname)s : %(module)s : %(funcName)s : %(message)s'
+  std_out:
+    format: '%(levelname)s : %(message)s'
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: std_out
+    level: DEBUG
+  file:
+    class: logging.FileHandler
+    filename: log/ocx-tools.log
+    formatter: fh
+    level: DEBUG
+  model:
+    class: logging.FileHandler
+    filename: log/model.log
+    formatter: fh
+    level: INFO
+root:
+  handlers:
+  - console
+  - file
+  - model
+  level: DEBUG
+version: 1

@@ -11,7 +11,7 @@ import sys
 sys.path.insert(0, os.path.abspath('../../'))
 
 project = 'ocx-schema-reader'
-copyright = 'Copyright (c) 2022 OCX Consortium (https://3docx.org).'
+copyright = 'Copyright (c) 2022 OCX Consortium.'
 author = 'Ole Christian Astrup'
 release = '1.0'
 

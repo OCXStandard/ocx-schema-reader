@@ -32,7 +32,7 @@ class OcxSchema:
 
     Attributes:
         _namespace: The dict of all namespaces on the form (prefix, namespace) key-value pairs resulting from
-            parsing all schema files. Ref. https://www.w3.org/TR/xml-names/#sec-namespaces
+            parsing all schema files, see `W3C namespaces <https://www.w3.org/TR/xml-names/#sec-namespaces>`_
         _ocx_global_elements: Hash table as key-value pairs (tag, OcxSchemaElement)
             for all parsed schema elements
         _is_parsed: True if a schema has been parsed, False otherwise
@@ -41,8 +41,9 @@ class OcxSchema:
         _schema_changes: A list of all schema changes described by the tag SchemaChange contained in the xsd file.
         _schema_types: The list of xsd types to be parsed. Only these types will be stored.
         _default_schema: The default schema to be parsed
-        self._builtin_xs_types: w3c primitive data types
-        ref https://www.w3.org/TR/xmlschema-2/#built-in-primitive-datatypes. Defined in config.yaml
+        _builtin_xs_types: W3C primitive data types, see `www.w3.org <https://www.w3.org/TR/xmlschema-2/#built-in-primitive-datatypes>`_
+        Defined in the module ``config.yaml``
+
 
     """
 

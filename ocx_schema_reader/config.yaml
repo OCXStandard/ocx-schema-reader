@@ -21,3 +21,4 @@ W3C_SCHEMA_BUILT_IN_TYPES: {
             '{http://www.w3.org/2001/XMLSchema}token': 'https://www.w3.org/TR/xmlschema-2/#token',
             '{http://www.w3.org/2001/XMLSchema}NOTATION': 'https://www.w3.org/TR/xmlschema-2/#NOTATION'
         }
+PROCESS_SCHEMA_TYPES: ['element', 'attribute', 'complexType', 'simpleType', 'attributeGroup']

@@ -177,7 +177,7 @@ def namespace(ctx):
 @click.pass_context
 @click.argument('element', type=str, nargs=1)
 def inspect(ctx, element):
-    e = schema_reader._get_ocx_element_from_type(element)
+    e = schema_reader.get_ocx_element_from_type(element)
     if e is not None:
         click.secho(f'Global element {e.get_name()} of type {e.get_type()}: {e.get_annotation()}', fg=INFO_COLOR)
         click.secho('\nSub-elements:', fg=INFO_COLOR)

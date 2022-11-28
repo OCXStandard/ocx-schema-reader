@@ -54,8 +54,3 @@ coverage.xml
 
 # Sublime Text
 *.sublime-workspace
-
-# Eclipse
-.settings
-/models/NAPA_VARD_NB_922_TEST-UPD-220310-OCX.3docx
-/models/NAPA-D-VLCC_1CARGO_MID-OCX_v286_rev5.3docx

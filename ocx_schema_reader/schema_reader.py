@@ -21,6 +21,7 @@ app_config = load_yaml_config(MODULE_CONFIG)
 DEFAULT_SCHEMA = app_config.get('DEFAULT_SCHEMA')
 SCHEMA_FOLDER = app_config.get('SCHEMA_FOLDER')
 W3C_SCHEMA_BUILT_IN_TYPES = app_config.get('W3C_SCHEMA_BUILT_IN_TYPES')
+PROCESS_SCHEMA_TYPES = app_config.get('PROCESS_SCHEMA_TYPES')
 APP = app_config.get('APP')
 
 
@@ -59,18 +60,18 @@ class OcxSchema:
         self._all_schema_elements = {}  # Hash table with tag as key schema_elements[tag] = lxml.etree.Element
         self._ocx_global_elements = {}  # Hash table with tag as key, value pairs(tag, OcxGlobalElement)
         self._all_types = defaultdict(list)  # Hash table with tag as key: all_types[tag] = lxml.etree.Element
-        self._schema_types = ['element', 'attribute', 'complexType', 'simpleType', 'attributeGroup']
+        self._schema_types = PROCESS_SCHEMA_TYPES
         self._schema_version = None
         self._schema_changes = defaultdict(list)
         # w3c primitive data types ref https://www.w3.org/TR/xmlschema-2/#built-in-primitive-datatypes
         self._builtin_xs_types = W3C_SCHEMA_BUILT_IN_TYPES
 
     def _add_global_ocx_element(self, tag: str, element: OcxGlobalElement):
-        """ Add a global ocx element to the hash table
+        """ Add a global OCX element to the hash table
 
         Args:
             tag: The hash key
-            element: The schema element to add
+            element: The global OCX element to add
 
         """
         #  self.log.debug(f'(Added schema element with tag {tag}')
@@ -81,7 +82,7 @@ class OcxSchema:
 
         Args:
             tag: The hash key
-            element: The schema element to add
+            element: The schema ``Element`` to add
 
         """
         #  self.log.debug(f'(Added schema element with tag {tag}')
@@ -108,7 +109,7 @@ class OcxSchema:
         if self._parse_schema(schema_url):
             self._process_ocx_elements()
             # Sort the hash table
-            self._sort_schema_elements()
+            # self._sort_schema_elements() ToDo: This function changes the dict to a list. Fix it!
             return True
         else:
             return False
@@ -377,7 +378,7 @@ class OcxSchema:
         if tag in self._builtin_xs_types:
             self.log.debug(f'The tag {tag} is a built-in type {self._builtin_xs_types[tag]}')
             return None, None
-        if tag not in self._all_schema_elements.keys():
+        if tag not in self._all_schema_elements:
             self.log.debug(f'{__class__}: The tag {tag} is not in the look-up table')
             return None, None
         else:
@@ -426,7 +427,7 @@ class OcxSchema:
         parents = {}
         self._find_parents(tag, ocx)
 
-    def _get_ocx_element_from_type(self, type: str) -> Union[OcxGlobalElement, None]:
+    def get_ocx_element_from_type(self, type: str) -> Union[OcxGlobalElement, None]:
         """ Method to retrieve the schema ``element etree.Element`` with the key 'type'
 
         Args:
@@ -443,7 +444,7 @@ class OcxSchema:
                 if prefix == LxmlElement.namespace_prefix(type):
                     namespace = self._namespace[prefix]
                     tag = SchemaHelper.unique_tag(name, namespace)
-                    if tag not in self._all_schema_elements.keys():
+                    if tag not in self._all_schema_elements:
                         self.log.debug(f'{__class__}: The tag {tag} is not in the look-up table')
                         return None
                     else:

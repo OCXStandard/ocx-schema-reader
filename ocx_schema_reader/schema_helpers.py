@@ -124,17 +124,16 @@ class SchemaHelper:
         return version
 
     @staticmethod
-    def find_schema_changes(root: Element) -> dict:
+    def find_schema_changes(root: Element) -> Dict:
         """ Find any schema version changes with tag ``SchemaChange``
 
         Args:
             root: The root element of the schema
 
         Returns:
-            A dict of all schema changes with keys:
-
+            A dict with keys:
             .. list-table:: Heading keys
-               :widths:  25 25 25 50
+               :widths:  25 25 25 25
 
                * - Version
                  - Author

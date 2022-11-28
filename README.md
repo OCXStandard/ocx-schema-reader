@@ -25,7 +25,7 @@ Include logo/demo screenshot etc.
 [Click](https://click.palletsprojects.com/en/8.1.x/)
 
 <b>Built with</b>
-- [Poetry](https://python-poetry.org/)
+[Poetry](https://python-poetry.org/)
 
 ## Features
 What makes your project stand out?
@@ -34,11 +34,19 @@ What makes your project stand out?
 Show what the library does as concisely as possible, developers should be able to figure out **how** your project solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
 
 ## Installation
-Provide step by step series of examples and explanations about how to get a development env running.
+*Prerequisite*: poetry must be installed in your  python environment.
+Run the following commands in a terminal to install and launch the ocx-schema-reader. 
 
+```
+$ git clone git@github.com:OCXStandard/ocx-schema-reader.git
+$ cd ocx-schema-reader
+$ poetry shell
+$ poetry install
+$ poetry run
+```
 ## API Reference
 
-Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README. For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
+[Read the Docs API documentation](https://ocx-schema-reader.readthedocs.io/en/latest/index.html)
 
 ## Tests
 Describe and show how to run the tests with code examples.

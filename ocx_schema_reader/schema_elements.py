@@ -681,7 +681,7 @@ class OcxGlobalElement:
         """ A dictionary of all ``OcxGlobalElement`` attribute values
 
         Returns:
-            table: A dictionary of attribute values with heading keys
+            A dictionary of attribute values with heading keys
 
             .. list-table:: Heading keys
                :widths: 25 25 25 25 25 50

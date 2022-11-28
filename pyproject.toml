@@ -36,15 +36,46 @@ fuzzywuzzy = "^0.18.0"
 tabulate = "^0.9.0"
 numpy = "^1.23.5"
 python-Levenshtein = "^0.20.8"
-pre-commit = "^2.20.0"
+
 
 
 [tool.poetry.dev-dependencies]
 Sphinx = "^5.3.0"
 sphinx-autodoc-typehints = "^1.19.5"
+pre-commit = "^2.20.0"
+black = "^22.10.0"
+isort = "^5.10.1"
+autoflake = "^2.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 #requires = ["setuptools"]
 #build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 119
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+[tool.pycln]
+all = true
+
+[tool.isort]
+line_length = 79
+multi_line_output = 3
+include_trailing_comma = true
+
+[tool.autoflake]
+check = true

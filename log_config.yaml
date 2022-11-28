@@ -8,7 +8,7 @@ handlers:
   console:
     class: logging.StreamHandler
     formatter: std_out
-    level: DEBUG
+    level: INFO
   file:
     class: logging.FileHandler
     filename: log/ocx-tools.log

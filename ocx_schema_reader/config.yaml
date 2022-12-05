@@ -1,6 +1,7 @@
 # Module specific config settings
 SCHEMA_FOLDER: 'schema_versions\'
-DEFAULT_SCHEMA: 'https://3docx.org/fileadmin/ocx_schema/V287/OCX_Schema.xsd'
+# DEFAULT_SCHEMA: 'https://3docx.org/fileadmin/ocx_schema/V287/OCX_Schema.xsd'
+DEFAULT_SCHEMA: 'https://raw.githubusercontent.com/OCXStandard/OCX_Schema/working_draft/OCX_Schema.xsd'
 APP: 'ocx-schema'
 # w3c primitive data types ref https://www.w3.org/TR/xmlschema-2/#built-in-primitive-datatypes
 W3C_SCHEMA_BUILT_IN_TYPES: {

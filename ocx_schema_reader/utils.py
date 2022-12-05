@@ -33,6 +33,20 @@ def default_to_regular(d) -> Dict:
     return d
 
 
+def default_to_grid(d) -> Dict:
+    """
+    Converts defaultdicts to a data grid with unique row ids.
+
+    Args:
+        d: The dict to be converted
+
+    """
+    if isinstance(d, defaultdict):
+        print(d.items())
+        d = {k: default_to_regular(v) for k, v in d.items()}
+    return d
+
+
 def get_path_dict(paths):
     new_path_dict = nested_dict()
     for path in paths:

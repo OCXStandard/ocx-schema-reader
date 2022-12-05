@@ -1,10 +1,12 @@
 #  Copyright (c) 2022 OCX Consortium (https://3docx.org). See the LICENSE.
 
 import re
-from collections import defaultdict
-from typing import Dict, Union
+from dataclasses import asdict
+from typing import Dict, List, Union
 
 from lxml.etree import Element, ElementTextIterator
+
+from ocx_schema_reader.schema_data_classes import SchemaChange
 from ocx_xml.xml_element import LxmlElement
 
 
@@ -91,14 +93,14 @@ class SchemaHelper:
 
     @staticmethod
     def unique_tag(name: str, namespace: str) -> str:
-        """A unique global tag from the element name and _namespace
+        """A unique global tag from the element name and namespace
 
         Args:
             name: The name of the element
-            namespace: The _namespace
+            namespace: The namespace
 
         Returns:
-            A unique element tag on the form ``{_namespace}name``
+            A unique element tag on the form ``{namespace}name``
 
         """
 
@@ -124,36 +126,49 @@ class SchemaHelper:
         return version
 
     @staticmethod
-    def find_schema_changes(root: Element) -> Dict:
+    def find_schema_changes(root: Element) -> List[SchemaChange]:
         """Find any schema version changes with tag ``SchemaChange``
 
         Args:
             root: The root element of the schema
 
         Returns:
-            A dict with keys:
-            .. list-table:: Heading keys
-               :widths:  25 25 25 25
 
-               * - Version
-                 - Author
-                 - Date
-                 - Description
+             A list of ``SchemaChange`` dataclasses
 
         """
-        schema_changes = defaultdict(list)
+        schema_changes = []
         changes = LxmlElement.find_all_children_with_name(root, "SchemaChange")
         for change in changes:
-            schema_changes["Version"].append(change.get("version"))
-            schema_changes["Author"].append(change.get("author"))
-            schema_changes["Date"].append(change.get("date"))
             # Retrieve the reason for change from the Description element
             description = LxmlElement.find_all_children_with_name(change, "Description")
             # Parse the text between start and end tag
             if len(description) > 0:
-                description = ""
+                description = text = ""
                 for text in ElementTextIterator(change[0], with_tail=False):
                     description = description + text
                     text = re.sub("[\n\t\r]", "", description)
-                schema_changes["Description"].append(text)
+                description = text
+            schema_change = SchemaChange(change.get("version"), change.get("author"), change.get("date"), description)
+            schema_changes.append(schema_change)
         return schema_changes
+
+    @classmethod
+    def schema_changes_data_grid(cls, root: Element) -> Dict:
+        """A dictionary of the content  of all ``SchemaChange`` tags
+
+        Args:
+            root: The root element of the schema
+
+        Returns:
+
+             A dict dta grid with a unique id as key
+        """
+        changes = cls.find_schema_changes(root)
+        data_grid = {}
+        i = 0
+        for change in changes:
+            c = f"{i:05d}"
+            data_grid[c] = asdict(change)
+            i = i + 1
+        return {key: value for key, value in sorted(data_grid.items())}

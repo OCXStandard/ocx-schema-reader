@@ -23,19 +23,22 @@ classifiers=[
     "Programming Language :: Python :: 3.10",
 ]
 [tool.poetry.scripts]
-ocx_schema_reader = 'main:cli'
+ocx-schema-reader = 'main:cli'
 
 [tool.poetry.dependencies]
 python = "^3.10"
 ocx-xml = "^0.1.0"
-PyYAML = "^6.0"
+pyyaml = "^6.0"
 click = "^8.1.3"
 colorlog = "^6.7.0"
 click-shell = "^2.1"
 fuzzywuzzy = "^0.18.0"
-tabulate = "^0.9.0"
+tabulate = "<0.9.0"
 numpy = "^1.23.5"
 python-Levenshtein = "^0.20.8"
+tbump = "^6.9.0"
+lxml="~4.9.1"
+requests="2.28.1"
 
 
 
@@ -46,6 +49,9 @@ pre-commit = "^2.20.0"
 black = "^22.10.0"
 isort = "^5.10.1"
 autoflake = "^2.0.0"
+flake8 = "^6.0.0"
+pytest = "^7.2.0"
+pytest-regressions = "^2.4.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -77,5 +83,44 @@ line_length = 79
 multi_line_output = 3
 include_trailing_comma = true
 
-[tool.autoflake]
-check = true
+[tool.tbump.version]
+current = "0.1.0"
+# Example of a semver regexp.
+# Make sure this matches current_version before
+# using tbump
+regex = '''
+  (?P<major>\d+)
+  \.
+  (?P<minor>\d+)
+  \.
+  (?P<patch>\d+)
+  '''
+
+[tool.tbump.git]
+message_template = "Bump to {new_version}"
+tag_template = "v{new_version}"
+
+# For each file to patch, add a [[tool.tbump.file]] config
+# section containing the path of the file, relative to the
+# tbump.toml location.
+[[tool.tbump.file]]
+src = "README.md"
+
+[[tool.tbump.file]]
+src = "pyproject.toml"
+
+# You can specify a list of commands to
+# run after the files have been patched
+# and before the git commit is made
+
+#  [[tool.tbump.before_commit]]
+#  name = "check changelog"
+#  cmd = "grep -q {new_version} Changelog.rst"
+
+# Or run some commands after the git tag and the branch
+# have been pushed:
+#  [[tool.tbump.after_push]]
+#  name = "publish"
+#  cmd = "./publish.sh"
+
+

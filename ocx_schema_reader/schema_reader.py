@@ -7,9 +7,9 @@ from typing import Any, Dict, List, Tuple, Union
 
 import requests
 from lxml.etree import Element, QName
-from ocx_xml.xml_parser import LxmlElement, LxmlParser
 from requests import HTTPError
 
+from ocx_schema_reader.schema_data_classes import SchemaSummary, SchemaType
 from ocx_schema_reader.schema_elements import (
     OcxAttribute,
     OcxChildElement,
@@ -17,6 +17,7 @@ from ocx_schema_reader.schema_elements import (
 )
 from ocx_schema_reader.schema_helpers import SchemaHelper
 from ocx_schema_reader.utils import ROOT_DIR, load_yaml_config
+from ocx_xml.xml_parser import LxmlElement, LxmlParser
 
 config = Path(ROOT_DIR) / "ocx_schema_reader" / "config.yaml"
 MODULE_CONFIG = config.absolute()
@@ -381,7 +382,6 @@ class OcxSchema:
 
         """
         name = LxmlElement.strip_namespace_prefix(schema_type)
-        namespace = None
         if LxmlElement.namespace_prefix(schema_type) in self._namespace:
             namespace = self._namespace[LxmlElement.namespace_prefix(schema_type)]
         else:
@@ -442,7 +442,7 @@ class OcxSchema:
         """Method to retrieve the schema ``element etree.Element`` with the key 'type'
 
         Args:
-            type: the ocx type on the form ``prefix:name``
+            schema_type: the ocx type on the form ``prefix:name``
 
         Returns:
             The ``OcxGlobalElement`` instance
@@ -612,145 +612,96 @@ class OcxSchema:
         Returns:
             The schema summary
         """
-        table = defaultdict(list)
-        table["Item"].append("Schema Version")
-        table["Value"].append(self.get_schema_version())
 
-        for schema_type in self._all_types:
-            table["Item"].append(f"Number of {schema_type} types")
-            table["Value"].append(len(self._all_types[schema_type]))
-        #
-        table["Item"].append("Number of namespaces")
-        table["Value"].append(len(self._namespace))
-        # Loop over namespaces
-        for ns in self._namespace:
-            table["Value"].append(self._namespace[ns])
-            table["Item"].append(ns)
-
-        return table
+        schema_version = self.get_schema_version()
+        schema_types = [(schema_type, len(self._all_types[schema_type])) for schema_type in self._all_types]
+        namespaces = [(ns, self._namespace[ns]) for ns in self._namespace]
+        return SchemaSummary(schema_version, schema_types, namespaces).to_dict()
 
     def tbl_attribute_groups(self) -> Dict:
         """The table of all parsed ``attributeGroup`` elements in the schema and any referenced schemas'
 
         Returns:
-            A dict of the ``attributeGroup`` elements with heading keys:
 
-        .. list-table:: Heading keys
-            :widths: 25 25 25 25 25
-
-            * - Prefix
-              - Name
-              - Tag
-              - Base
-              - Source line
+             The ``SchemaType`` data class attributes of ``attributeGroup``.
         """
 
-        table = defaultdict(list)
+        table = {}
         elements = self._get_schema_attribute_groups()
         for tag in elements:
-            self._types_table(table, tag)
+            table[tag] = self._get_schema_type_data_class(tag).to_dict()
         return table
 
     def tbl_simple_types(self) -> Dict:
         """The table of all parsed ``simpleType`` elements in the schema and any referenced schemas'
+
         Returns:
 
-            A dict of the ``simpleType`` elements with heading keys:
+            The ``SchemaType`` data class attributes of ``simpleType``
 
-        .. list-table:: Heading keys
-            :widths: 25 25 25 25 25
-
-            * - Prefix
-              - Name
-              - Tag
-              - Base
-              - Source line
         """
 
-        table = defaultdict(list)
+        table = {}
         elements = self._get_schema_simple_types()
         for tag in elements:
-            self._types_table(table, tag)
+            table[tag] = self._get_schema_type_data_class(tag).to_dict()
         return table
 
     def tbl_attribute_types(self) -> Dict:
         """The table of all parsed attribute elements in the schema and any referenced schemas'
+
         Returns:
 
-            A dict of the ``attribute`` elements with heading keys:
-
-        .. list-table:: Heading keys
-            :widths: 25 25 25 25 25
-
-            * - Prefix
-              - Name
-              - Tag
-              - Base
-              - Source line
+            The ``SchemaType`` data class attributes of ``attributeType``
         """
 
-        table = defaultdict(list)
+        table = {}
         elements = self._get_schema_attributes()
         for tag in elements:
-            self._types_table(table, tag)
+            table[tag] = self._get_schema_type_data_class(tag).to_dict()
         return table
 
     def tbl_element_types(self) -> Dict:
         """The table of all parsed elements of type element in the schema and any referenced schemas'
 
         Returns:
-            A dict of the ``element`` elements with heading keys:
 
-             .. list-table:: Heading keys
-               :widths: 25 25 25 25 25
-
-               * - Prefix
-                 - Name
-                 - Tag
-                 - Base
-                 - Source line
-
+            The ``SchemaType`` data class attributes of ``element``
         """
 
-        table = defaultdict(list)
+        table = {}
         elements = self._get_schema_elements()
         for tag in elements:
-            self._types_table(table, tag)
+            table[tag] = self._get_schema_type_data_class(tag).to_dict()
         return table
 
     def tbl_complex_types(self) -> Dict:
         """The table of all parsed complexType elements in the schema and any referenced schemas'
 
         Returns:
-            A dict of the ``complexType`` elements with heading keys:
 
-            .. list-table:: Heading keys
-                :widths: 25 25 25 25 25
-
-                *   - Prefix
-                    - Name
-                    - Tag
-                    - Base
-                    - Source line
-
+            The ``SchemaType`` data class attributes of ``complexType``
         """
 
-        table = defaultdict(list)
+        table = {}
         elements = self._get_schema_complex_types()
         for tag in elements:
-            self._types_table(table, tag)
+            table[tag] = self._get_schema_type_data_class(tag).to_dict()
         return table
 
-    def _types_table(self, table: defaultdict, tag: str):
-        """Internal function adding data for the type with ``tag`` to the input ``table``'"""
+    def _get_schema_type_data_class(self, tag: str) -> SchemaType:
+        """Return the ``SchemaType`` dataclass of the schema type with ``tag``
+            Args:
+                tag: the schema ``tag``
+
+            Returns:
+
+                A ``dataclass`` with the attributes of the element with the ``tag``
+        '"""
 
         e = self._get_element(tag)
         qn = QName(tag)
         prefix = self._get_prefix_from_namespace(qn.namespace)
         if prefix == "None":
             self.log.error(f"Tag {tag} has an unknown _namespace")
-        table["Prefix"].append(prefix)
-        table["Name"].append(LxmlElement.get_name(e))
-        table["Tag"].append(tag)
-        table["Base"].append(LxmlElement.get_base(e))
-        table["Source line"].append(LxmlElement.get_source_line(e))
+        return SchemaType(prefix, LxmlElement.get_name(e), tag, LxmlElement.get_source_line(e))

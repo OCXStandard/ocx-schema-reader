@@ -36,6 +36,14 @@ ocx\_schema\_reader.schema\_reader module
    :undoc-members:
    :show-inheritance:
 
+ocx\_schema\_reader.schema\_data\_classes module
+------------------------------------------------
+
+.. automodule:: ocx_schema_reader.schema_data_classes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 ocx\_schema\_reader.utils module
 --------------------------------
 

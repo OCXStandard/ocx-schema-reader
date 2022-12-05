@@ -1,5 +1,6 @@
-Documentation
-=============
+ocx_schema_reader
+=================
+
 
 The ''OcxSchema'' class
 ***********************
@@ -37,6 +38,30 @@ The ''SchemaHelper'' class
 **************************
 
 .. autoclass:: ocx_schema_reader.schema_helpers.SchemaHelper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+The ''SchemaType'' class
+************************
+
+.. autoclass:: ocx_schema_reader.schema_data_classes.SchemaType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+The ''SchemaSummary'' class
+***************************
+
+.. autoclass:: ocx_schema_reader.schema_data_classes.SchemaSummary
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+The  ''SchemaChange'' class
+***************************
+
+.. autoclass:: ocx_schema_reader.schema_data_classes.SchemaChange
    :members:
    :undoc-members:
    :show-inheritance:

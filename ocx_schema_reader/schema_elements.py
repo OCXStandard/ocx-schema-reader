@@ -5,9 +5,9 @@ from logging import Logger
 from typing import Dict, List, Union
 
 from lxml.etree import Element, QName
-from ocx_xml.xml_element import LxmlElement
 
 from ocx_schema_reader.schema_helpers import SchemaHelper
+from ocx_xml.xml_element import LxmlElement
 
 
 class OcxAttribute:

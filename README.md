@@ -1,6 +1,6 @@
 
 ![3DOCX.org logo](./docs/source/_static/logo.png)
-# ocx-schema reader
+# ocx-schema-reader
 The project implements a command line interface for parsing the [Open Class 3D Exchange (OCX)](https://github.com/OCXStandard/OCX_Schema) schema including command line functionality to output schema change history and inspect schema element data.
 
 
@@ -33,6 +33,15 @@ What makes your project stand out?
 ## Code Example
 Show what the library does as concisely as possible, developers should be able to figure out **how** your project solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
 
+## Project structure
+The project structure consists of the build folder `dist`, the Sphinx documentation folder `docs`, the python module folders `ocx_schema_reader`, `ocx_xml` and the `tests` folder:
+```
+ocx-schema-reader
+├───dist
+├───docs
+├───ocx_schema_reader
+├───tests
+```
 ## Installation
 *Prerequisite*: poetry must be installed in your  python environment.
 Run the following commands in a terminal to install and launch the ocx-schema-reader. 
@@ -45,7 +54,7 @@ $ poetry install
 $ poetry run
 ```
 ## API Reference
-
+The API documentation is built using Sphinx. The documentation is published to Read The Docs for the latest version:
 [Read the Docs API documentation](https://ocx-schema-reader.readthedocs.io/en/latest/index.html)
 
 ## Tests
@@ -60,6 +69,7 @@ Let people know how they can contribute into your project. A [contributing guide
 
 ### CDI
 
+![CDI](./docs/source/_static/cdi_pipeline_wbck.jpg)
 see (http://www.sefidian.com/2021/08/03/how-to-use-black-flake8-and-isort-to-format-python-codes/)
 
 ## Credits

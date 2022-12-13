@@ -28,7 +28,7 @@ init: ## Init the project dev set-up. poetry must be installed in the Python env
 	@printf "\033[36m%s\033[0m %s\n, 'Installing isort ...'"
 	@poetry add isort
 	@printf "\033[36m%s\033[0m %s\n, 'Installing bump2version ...'"
-	@poetry self add bump2version
+	@poetry add bump2version
 
 
 hash:  ## Print the git HASH
@@ -38,16 +38,16 @@ export: requirements_dev.txt ## Export requirements to requirements_dev.txt
 	@printf "\033[36m%s\033[0m\n"  'Updating requirements_dev.txt ...'
 	@poetry export --without-hashes -o requirements_dev.txt
 
-install: poetry.lock
-	@printf "\033[36m%s\033[0m\n"   "Installing dependencies ..."
+install: build
+	@printf "\033[36m%s\033[0m\n"   "Installing package ..."
 	@poetry install
 
-build: hash
+build: hash ## Build the package distribution files
 	@printf "\033[36m%s\033[0m %s\n, 'Building target ...'"
 	@poetry build
 
 test-all: ## Run all tests and display the summary
-	@pytest --durations=5 -v
+	@ pytest --durations=5 -v --cov-report term --cov ocx_schema_reader .\tests\
 
 lint: ## Run the linters on the source code
 	@printf "\033[36m%s\033[0m\n"  "Running black against source and test files..."
@@ -61,30 +61,21 @@ html: ## Open the the html docs built by Sphinx
 	@cmd /c start $(CURDIR)/$(BUILDDIR)/html/$(MODULE).html
 
 
-# define the name of the virtual environment directory
-VENV := venv
-
 # default target, when make executed without arguments
-all: install build export
+all: build test-all install export  ## Do a complete build, test and install.  Update requirements.txt
 
-$(VENV)/bin/activate: requirements.txt
-	python3 -m venv $(VENV)
-	./$(VENV)/bin/pip install -r requirements.txt
 
-# venv is a shortcut target
-venv: $(VENV)/bin/activate
-
-run: venv
-	./$(VENV)/bin/python3 app.py
-
-clean:
-	rm -rf $(VENV)
+clean: ## Clean all cache files
 	find . -type f -name '*.pyc' -delete
 
-bump:  ## Bump the version the next version. All version strings will be updated
-
+bump-dev:  ## Bump the version the next version. All version strings will be updated
+	@bump2version --config-file .bumpversion.cfg -n  part dev --new-version  $($1)
 sphinx-help:  ## Sphinx options
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 sphinx: ## Build the html docs using Sphinx. For other Sphinx options, run make in the docs folder
+	@$(SPHINXBUILD) -M "clean" "$(SOURCEDIR)" "$(BUILDDIR)"
 	@$(SPHINXBUILD) -M "$(SPHINXOPTS)" "$(SOURCEDIR)" "$(BUILDDIR)"
+
+run: ## Run the script
+	@python -m ocx_schema_reader

@@ -1,7 +1,6 @@
 ocx_schema_reader
 =================
 
-
 The ''OcxSchema'' class
 ***********************
 
@@ -46,6 +45,14 @@ The ''SchemaType'' class
 ************************
 
 .. autoclass:: ocx_schema_reader.schema_data_classes.SchemaType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+The ''BaseDataClass'' class
+***************************
+
+.. autoclass:: ocx_schema_reader.schema_data_classes.BaseDataClass
    :members:
    :undoc-members:
    :show-inheritance:

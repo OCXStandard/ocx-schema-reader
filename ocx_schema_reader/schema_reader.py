@@ -1,4 +1,4 @@
-#  Copyright (c) 3-2022 OCX Consortium (https://3docx.org). See the LICENSE.
+#  Copyright (c) 3-2022. OCX Consortium https://3docx.org. See the LICENSE
 
 from collections import defaultdict
 from logging import Logger
@@ -39,19 +39,16 @@ class OcxSchema:
 
     Attributes:
         _namespace: The dict of all namespaces on the form (prefix, namespace) key-value pairs resulting from
-            parsing all schema files, see `W3C namespaces <https://www.w3.org/TR/xml-names/#sec-namespaces>`_
-        _ocx_global_elements: Hash table as key-value pairs (tag, OcxSchemaElement)
-            for all parsed schema elements
+            parsing all schema files, `W3C <https://www.w3.org/TR/xml-names/#sec-namespaces>`_.
+        _ocx_global_elements: Hash table as key-value pairs `(tag, OcxSchemaElement)` for all parsed schema elements
         _is_parsed: True if a schema has been parsed, False otherwise
         _schema_version: The version of the parsed schema
         _local_folder: The local folder where any external schemas will be downloaded
         _schema_changes: A list of all schema changes described by the tag SchemaChange contained in the xsd file.
         _schema_types: The list of xsd types to be parsed. Only these types will be stored.
         _default_schema: The default schema to be parsed
-        _builtin_xs_types: W3C primitive data types,
-        see `www.w3.org <https://www.w3.org/TR/xmlschema-2/#built-in-primitive-datatypes>`_
-        Defined in the module ``config.yaml``
-
+        _builtin_xs_types: W3C primitive data types.
+            `www.w3.org <https://www.w3.org/TR/xmlschema-2/#built-in-primitive-datatypes>`_. Defined in ``config.yaml``
 
     """
 
@@ -238,7 +235,7 @@ class OcxSchema:
     def _process_ocx_elements(self):
         """Process all parsed elements and build the hash table of OcxSchemaElement"""
         # All schema elements of type element
-        elements = self._get_schema_elements()
+        elements = self._get_schema_element_types()
         for tag in elements:
             e = self._get_element(tag)
             qn = QName(tag)
@@ -526,7 +523,7 @@ class OcxSchema:
         """Internal function to retrieve a list of tags of ``lxml.etree.Element`` schema elements of a specific type
 
         Returns:
-            The list of all tags of ``lxml.etree.Element`` of type ``type``
+            The sorted list of all tags of ``lxml.etree.Element`` of type ``schema_type``
 
         """
         elements = []
@@ -561,7 +558,7 @@ class OcxSchema:
         """
         return self._schema_changes
 
-    def _get_schema_elements(self) -> List:
+    def _get_schema_element_types(self) -> List:
         """All schema elements of type ``element``
 
         Returns:
@@ -588,7 +585,7 @@ class OcxSchema:
         """
         return self._get_schema_types("simpleType")
 
-    def _get_schema_attributes(self) -> List[str]:
+    def _get_schema_attribute_tyepes(self) -> List[str]:
         """All schema elements of type ``attribute'
 
         Returns:
@@ -598,8 +595,8 @@ class OcxSchema:
 
         return self._get_schema_types("attribute")
 
-    def _get_schema_attribute_groups(self) -> List[str]:
-        """Alle schema elements of type ``attributeGroup``
+    def _get_schema_attribute_group_types(self) -> List[str]:
+        """All schema elements of type ``attributeGroup``
 
         Returns:
             The list of all etree.Element of type ``attributeGroup``
@@ -618,16 +615,16 @@ class OcxSchema:
         namespaces = [(ns, self._namespace[ns]) for ns in self._namespace]
         return SchemaSummary(schema_version, schema_types, namespaces).to_dict()
 
-    def tbl_attribute_groups(self) -> Dict:
-        """The table of all parsed ``attributeGroup`` elements in the schema and any referenced schemas'
+    def tbl_attribute_groups(self) -> List[SchemaType]:
+        """All parsed ``attributeGroup`` types in the schema and any referenced schemas'
 
         Returns:
 
-             The ``SchemaType`` data class attributes of ``attributeGroup``.
+             List of  ``SchemaType`` data class holding ``attributeGroup`` attributes.
         """
 
         table = {}
-        elements = self._get_schema_attribute_groups()
+        elements = self._get_schema_attribute_group_types()
         for tag in elements:
             table[tag] = self._get_schema_type_data_class(tag).to_dict()
         return table
@@ -656,7 +653,7 @@ class OcxSchema:
         """
 
         table = {}
-        elements = self._get_schema_attributes()
+        elements = self._get_schema_attribute_tyepes()
         for tag in elements:
             table[tag] = self._get_schema_type_data_class(tag).to_dict()
         return table
@@ -670,7 +667,7 @@ class OcxSchema:
         """
 
         table = {}
-        elements = self._get_schema_elements()
+        elements = self._get_schema_element_types()
         for tag in elements:
             table[tag] = self._get_schema_type_data_class(tag).to_dict()
         return table

@@ -6,3 +6,4 @@ ocx-schema-reader modules
 
    ocx_schema_reader
    ocx_xml
+   schema_cli

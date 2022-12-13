@@ -1,5 +1,13 @@
 
 ![3DOCX.org logo](./docs/source/_static/logo.png)
+
+[![Build, Test and Lint Actions](https://github.com/OCXStandard/ocx-schema-reader/workflows/Build,%20Test,%20Lint/badge.svg)](https://github.com/OCXStandard/ocx-schema-reader/workflows/Build,%20Test,%20Lint/badge.svg)
+[![Push Action](https://github.com/MartinHeinz/python-project-blueprint/workflows/Push/badge.svg)](https://github.com/https://github.com/MartinHeinz/python-project-blueprint/workflows/Push/badge.svg)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/05c44c881bc10a706cbc/test_coverage)](https://codeclimate.com/github/MartinHeinz/python-project-blueprint/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/05c44c881bc10a706cbc/maintainability)](https://codeclimate.com/github/MartinHeinz/python-project-blueprint/maintainability)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MartinHeinz_python-project-blueprint&metric=alert_status)](https://sonarcloud.io/dashboard?id=MartinHeinz_python-project-blueprint)
+
+
 # ocx-schema-reader
 The project implements a command line interface for parsing the [Open Class 3D Exchange (OCX)](https://github.com/OCXStandard/OCX_Schema) schema including command line functionality to output schema change history and inspect schema element data.
 

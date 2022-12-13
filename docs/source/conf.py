@@ -1,3 +1,5 @@
+#  Copyright (c) 2022. OCX Consortium https://3docx.org. See the LICENSE
+
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -26,6 +28,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx_autodoc_typehints",
+    "click_extra.sphinx",
 ]
 
 templates_path = ["_templates"]
@@ -37,3 +40,5 @@ exclude_patterns = ["_build", ".venv"]
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
+
+auto_api_options = {"private-members": False}

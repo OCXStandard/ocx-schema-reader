@@ -1,4 +1,4 @@
-#  Copyright (c) 2022 OCX Consortium (https://3docx.org). See the LICENSE.
+#  Copyright (c) 2022. OCX Consortium https://3docx.org. See the LICENSE
 
 import re
 from typing import Any, Dict, List, Union
@@ -18,7 +18,7 @@ class LxmlElement:
             element: The current etree.Element node
 
         Returns:
-            A List of all attributes of 'element'
+            A List of all attributes of ``element``
 
         """
         return element.items()
@@ -62,7 +62,7 @@ class LxmlElement:
             element: The current etree.Element node
 
         Returns:
-            The line number of the 'element' in the source
+            The line number of the ``element`` in the source
 
         """
         return element.sourceline
@@ -72,10 +72,10 @@ class LxmlElement:
         """Returns the parent of this element or None for the root element.
 
         Args:
-            element: The current etree.Element node
+            element: The current ``etree.Element`` node
 
         Returns:
-            The parent Element node of the document for this element or none if 'element' is the root
+            The parent Element node of the document for this element or none if ``element`` is the root
 
         """
         return element.getparent()
@@ -101,7 +101,7 @@ class LxmlElement:
             element: The XML parent node
 
         Returns:
-            A dictionary of (key,value) pairs of the element attributes
+            A dictionary of ``(key,value)`` pairs of the element attributes
 
         """
         return element.attrib
@@ -122,7 +122,7 @@ class LxmlElement:
 
     @classmethod
     def unique_tag(cls, element: Element) -> Any:
-        """The unique tag of an XML element: '{namespace}name'
+        """The unique tag of an XML element: ``{namespace}name``
 
         Args:
             element: The XML parent node
@@ -137,7 +137,7 @@ class LxmlElement:
 
     @staticmethod
     def get_name(element: Element) -> Any:
-        """The name of an XML element defined by the attribute 'name'
+        """The name of an XML element defined by the attribute ``name``
 
         Args:
             element: The XML parent node
@@ -153,14 +153,14 @@ class LxmlElement:
 
     @staticmethod
     def get_use(element: Element) -> Any:
-        """Whether XML element is required or optional given by the attribute value 'use'
+        """Whether XML element is required or optional given by the attribute value ``use``
 
         Args:
             element: The XML parent node
 
         Returns:
 
-            The element use as a string, either 'required' or optional'
+            The element use as a string, either ``required`` or ``optional``
 
         """
         use = element.get("use")
@@ -170,7 +170,7 @@ class LxmlElement:
 
     @staticmethod
     def get_reference(element: Element) -> Any:
-        """The referenced XML element defined by the attribute 'ref'
+        """The referenced XML element defined by the attribute ``ref``
 
         Args:
             element: The XML parent node
@@ -226,6 +226,7 @@ class LxmlElement:
             The tuple of the element lower and upper bounds (lower, upper)
 
         """
+
         attributes = LxmlElement.get_xml_attrib(element)
         if "minOccurs" in attributes:
             lower = int(attributes["minOccurs"])
@@ -260,7 +261,8 @@ class LxmlElement:
             element: the etree.Element instance
 
         Returns:
-            TTrue if the element node is a choice, false otherwise
+
+            True if the element node is a choice, false otherwise
 
         """
         choice = False
@@ -280,6 +282,7 @@ class LxmlElement:
             element: the etree.Element instance
 
         Returns:
+
             True if the element is a  substitutionGroup, false otherwise
 
         """
@@ -294,9 +297,10 @@ class LxmlElement:
         """Return True if the element is abstract
 
         Args:
-            element: the etree.Element instance
+            element: the ``etree.Element`` instance
 
         Returns:
+
             True if the element abstract, false otherwise
 
         """
@@ -311,7 +315,7 @@ class LxmlElement:
         """Return the name of the element's substitutionGroup
 
         Args:
-            element: the etree.Element instance
+            element: the ``etree.Element`` instance
 
         Returns:
             name of substitutionGroup, None if no substitutionGroup
@@ -328,6 +332,7 @@ class LxmlElement:
             element: the etree.Element instance
 
         Returns:
+
             The element text stripped of any special characters
 
         """
@@ -347,6 +352,7 @@ class LxmlElement:
             element: The XML parent node
 
         Returns:
+
             The element namespace
 
         """
@@ -385,13 +391,14 @@ class LxmlElement:
 
     @staticmethod
     def find_all_children_with_name(element: Element, child_name: str, namespace: str = "*") -> List:
-        """Find all the XML element's children with  name 'child_name'
+        """Find all the XML element's children with  name ``child_name``
         Args:
             element: The XML parent node to search from
             child_name: The name of the child
-            namespace: The search namespace. Default is the wildcard '*' matching any namespace
+            namespace: The search namespace. Default is the wildcard ``*`` matching any namespace
 
         Returns:
+
             A list of elements. Empty list if no children can be found
 
         """
@@ -400,7 +407,7 @@ class LxmlElement:
 
     @staticmethod
     def find_child_with_name(element: Element, child_name: str, namespace: str = "*") -> Element:
-        """Find the first direct child of the XML element's children with  name 'child_name'
+        """Find the first direct child of the XML element's children with  name ``child_name``
         Args:
             element: The XML parent node to search from
             child_name: The name of the child
@@ -419,9 +426,10 @@ class LxmlElement:
 
         Args:
             element: The XML parent node to search from
-            namespace: The search namespace. Default is the wildcard '*' matching any namespace
+            namespace: The search namespace. Default is the wildcard ``*`` matching any namespace
 
         Returns:
+
             The list of the xs:attribute type found
 
         """
@@ -527,9 +535,11 @@ class LxmlElement:
     def namespace_prefix(element: str) -> Union[str, None]:
         """Returns the namespace prefix of an element if any
         Args:
+
             element: The element name with or without prefix as a string
 
         Returns:
+
             The element prefix string or None if no prefix
 
         """
@@ -547,6 +557,7 @@ class LxmlElement:
 
         Returns:
             The curly decorated namespace
+
         """
         return "{" + ns + "}"
 

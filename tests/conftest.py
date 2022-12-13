@@ -1,3 +1,5 @@
+#  Copyright (c) 2022. OCX Consortium https://3docx.org. See the LICENSE
+
 import logging
 
 import pytest
@@ -9,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.fixture
-def load_schema(shared_datadir) -> LxmlParser:
+def load_schema_from_file(shared_datadir) -> LxmlParser:
     parser = LxmlParser(logger)
     test_data = shared_datadir / "OCX_Schema.xsd"
     parser.parse(test_data)
@@ -18,7 +20,7 @@ def load_schema(shared_datadir) -> LxmlParser:
 
 
 @pytest.fixture
-def process_schema(shared_datadir, load_schema: LxmlParser) -> OcxSchema:
+def process_schema(shared_datadir, load_schema_from_file) -> OcxSchema:
     test_data = shared_datadir / "OCX_Schema.xsd"
     url = str(test_data.resolve())
     schema_folder = shared_datadir

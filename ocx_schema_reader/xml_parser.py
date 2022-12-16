@@ -1,18 +1,13 @@
 #  Copyright (c) 2022. OCX Consortium (https://3docx.org) See the LICENSE
 
 #  Copyright (c) 3Docx.org. See the LICENSE.
-import logging
-import shutil
-from collections import defaultdict
 from logging import Logger
-from typing import Any, Dict, List
+from typing import Dict
 
-import urllib3
 from lxml import etree
-from lxml.etree import Element, ElementTextIterator, QName, XMLSyntaxError
-from urllib3.exceptions import HTTPError, SSLError
+from lxml.etree import Element, XMLSyntaxError
 
-from ocx_xml.xml_element import LxmlElement
+from ocx_schema_reader.xml_element import LxmlElement
 
 CONFIG_YAML = "/config.yaml"
 LOG_CONFIG_YAML = "/log_config.yaml"
@@ -138,7 +133,9 @@ class LxmlParser:
 
         """
         root = self.get_root()
-        assert root is not None, f"{__name__}: The root node is None"
+        if __debug__:
+            if root is None:
+                raise AssertionError(f"{__name__}: The root node is None")
         return root.nsmap
 
     def get_target_namespace(self) -> str:
@@ -149,7 +146,9 @@ class LxmlParser:
 
         """
         root = self.get_root()
-        assert root is not None, f"{__name__}: The root node is None"
+        if __debug__:
+            if root is None:
+                raise AssertionError(f"{__name__}: The root node is None")
         return root.get("targetNamespace")
 
     def get_referenced_files(self) -> Dict:
@@ -159,7 +158,9 @@ class LxmlParser:
             A dict of key, value pairs (namespace: location/URL) of all xs:import tags.
         """
         root = self.get_root()
-        assert root is not None, f"{__name__}: The root node is None"
+        if __debug__:
+            if root is None:
+                raise AssertionError(f"{__name__}: The root node is None")
         urls = {}
         references = LxmlElement.find_all_children_with_name(root, "import")
         for ref in references:

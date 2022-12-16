@@ -5,7 +5,7 @@ import logging
 import pytest
 
 from ocx_schema_reader.schema_reader import OcxSchema
-from ocx_xml.xml_parser import LxmlParser
+from ocx_schema_reader.xml_parser import LxmlParser
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ def load_schema_from_file(shared_datadir) -> LxmlParser:
     parser = LxmlParser(logger)
     test_data = shared_datadir / "OCX_Schema.xsd"
     parser.parse(test_data)
-    assert parser.lxml_version() == (4, 9, 1, 0)
+    assert parser.lxml_version() == (4, 9, 2, 0)
     return parser
 
 

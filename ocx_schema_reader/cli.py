@@ -14,8 +14,11 @@ from tabulate import tabulate
 
 from ocx_schema_reader.schema_elements import LxmlElement
 from ocx_schema_reader.schema_reader import OcxSchema
-from ocx_schema_reader.utils import (ROOT_DIR, load_yaml_config,
-                                     number_table_rows)
+from ocx_schema_reader.utils import (
+    ROOT_DIR,
+    load_yaml_config,
+    number_table_rows,
+)
 
 logger = logging.getLogger(__name__)
 click_logging.basic_config(logger)

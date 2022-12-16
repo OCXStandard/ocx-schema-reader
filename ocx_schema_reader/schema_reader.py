@@ -10,8 +10,11 @@ from lxml.etree import Element, QName
 from requests import HTTPError
 
 from ocx_schema_reader.schema_data_classes import SchemaSummary, SchemaType
-from ocx_schema_reader.schema_elements import (OcxAttribute, OcxChildElement,
-                                               OcxGlobalElement)
+from ocx_schema_reader.schema_elements import (
+    OcxAttribute,
+    OcxChildElement,
+    OcxGlobalElement,
+)
 from ocx_schema_reader.schema_helpers import SchemaHelper
 from ocx_schema_reader.utils import ROOT_DIR, load_yaml_config
 from ocx_schema_reader.xml_parser import LxmlElement, LxmlParser

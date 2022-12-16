@@ -136,7 +136,8 @@ def list_files_in_directory(directory: str, file_ext: str = ".3docx") -> list:
        list of matching files.
     """
     dir_path = Path(directory)
-    assert dir_path.is_dir()
+    if not dir_path.is_dir():
+        raise AssertionError(errno.EEXIST)
     file_list = []
     for x in sorted(dir_path.iterdir()):
         if x.is_file() and x.suffix.lower() == file_ext:

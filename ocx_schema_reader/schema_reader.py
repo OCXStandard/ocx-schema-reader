@@ -17,7 +17,7 @@ from ocx_schema_reader.schema_elements import (
 )
 from ocx_schema_reader.schema_helpers import SchemaHelper
 from ocx_schema_reader.utils import ROOT_DIR, load_yaml_config
-from ocx_xml.xml_parser import LxmlElement, LxmlParser
+from ocx_schema_reader.xml_parser import LxmlElement, LxmlParser
 
 config = Path(ROOT_DIR) / "ocx_schema_reader" / "config.yaml"
 MODULE_CONFIG = config.absolute()

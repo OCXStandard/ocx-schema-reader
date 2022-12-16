@@ -14,14 +14,14 @@ import os
 import sys
 
 import click
-
-if sys.path[0] in ("", os.getcwd()):
-    sys.path.pop(0)
-
 from click import Context, echo, group, pass_context
 
 from ocx_schema_reader import __version__
 from ocx_schema_reader.cli import schema
+
+# if sys.path[0] in ("", os.getcwd()):
+#    sys.path.pop(0)
+
 
 WELCOME_MSG = "Hello!"
 EXIT_MSG = "Goodbye!"
@@ -94,7 +94,7 @@ def run_cli_prompt():
         sys.exit(0)
 
 
-if __name__ == "__main__":
+if __name__ == "main":
     quitapp = False  # global flag
     run_cli_prompt()
     # from ocx_schema_reader.cli import schema

@@ -4,43 +4,30 @@ import logging
 from collections import defaultdict
 from pathlib import Path
 
-import click_logging
 import numpy as np
-from click import Choice
+from click_shell import shell
+from click import Choice, prompt
 from click import Path as ClickPath
-from click import argument, group, option, pass_context, secho
+from click import argument, option, pass_context, secho
 from fuzzywuzzy import fuzz
 from tabulate import tabulate
 
 from ocx_schema_reader.schema_elements import LxmlElement
 from ocx_schema_reader.schema_reader import OcxSchema
-from ocx_schema_reader.utils import (ROOT_DIR, load_yaml_config,
-                                     number_table_rows)
-
-logger = logging.getLogger(__name__)
-click_logging.basic_config(logger)
-
-
-MODULE_CONFIG = Path(ROOT_DIR) / "ocx_schema_reader" / "config.yaml"
-config = load_yaml_config(MODULE_CONFIG)
-
-INFO_COLOR = config.get("INFO_COLOR")
-ERROR_COLOR = config.get("ERROR_COLOR")
-APP = config.get("APP")
-DEFAULT_SCHEMA = config.get("DEFAULT_SCHEMA")
-SCHEMA_FOLDER = config.get("SCHEMA_FOLDER")
+from ocx_schema_reader.utils import (dict_to_list, number_table_rows)
+from ocx_schema_reader import logger, INFO_COLOR, ERROR_COLOR, APP, DEFAULT_SCHEMA, SCHEMA_FOLDER
 
 schema_reader = OcxSchema(logger, SCHEMA_FOLDER)
 
 
-# @shell(prompt=f"{APP} > ", intro=f"Starting {APP}..")
-@group()
+@shell(prompt=f"{APP} > ", intro=f"Starting {APP}..")
 @pass_context
 def schema(ctx):
+    """ The schema subcommands"""
     pass
 
 
-@schema.command(help="Assign an OCX xsd file to be parsed.")
+@schema.command(short_help="The OCX xsd file to be parsed.")
 @pass_context
 @option(
     "-s",
@@ -50,7 +37,7 @@ def schema(ctx):
     type=ClickPath(exists=True),
 )
 def assign_schema(ctx, schema_file):
-    """Assign an OCX xsd file to be parsed"""
+    """Assign an OCX xsd file to be parsed using the `parse` subcommand."""
     schema_reader.put_default_schema(schema_file)
     secho(
         f"Assigned new default schema: {schema_reader.get_default_schema()}",
@@ -65,7 +52,8 @@ def assign_schema(ctx, schema_file):
     help="Assign the default schema folder",
     type=ClickPath(exists=True),
 )
-def assign_folder(schema_folder):
+def \
+        assign_folder(schema_folder):
     """Assign default OCX schema"""
     schema_reader.put_schema_folder(schema_folder)
     secho(
@@ -74,7 +62,8 @@ def assign_folder(schema_folder):
     )
 
 
-@schema.command()
+@schema.command(short_help="Print the schema change history")
+@pass_context
 @option(
     "-v",
     "--version",
@@ -83,8 +72,8 @@ def assign_folder(schema_folder):
     default="Current",
     help="Print the list of schema changes for the current version (default) or all historic versions",
 )
-def changes(version):
-    """ " Print the list of schema changes for the current version (default) or all historic versions"""
+def changes(ctx, version):
+    """ Print the list of schema changes for the current version (default) or all historic versions"""
     schema_changes = schema_reader.get_schema_changes()
     if version.lower() == "current":
         table = defaultdict(list)
@@ -93,15 +82,16 @@ def changes(version):
         where = np.argwhere(arr == current_version)
         i, k = where[0], where[-1]
         for key, result in schema_changes.items():
-            sliced = result[i[0] : k[0]]
+            sliced = result[i[0]: k[0]]
             table[key] = sliced
         schema_changes = table
     secho(tabulate(schema_changes, headers=list(schema_changes.keys())), fg=INFO_COLOR)
 
 
-@schema.command()
-def summary():
-    """Output the schema summary info"""
+@schema.command(short_help="Output schema summary")
+@pass_context
+def summary(ctx):
+    """Output the schema summary information."""
     if schema_reader.is_parsed():
         result = schema_reader.tbl_summary()
         # secho(tabulate(result, headers=list(result.keys())), fg=INFO_COLOR)
@@ -110,7 +100,7 @@ def summary():
         secho("No schema has been parsed. Parse a schema first", fg=INFO_COLOR)
 
 
-@schema.command()
+@schema.command(short_help="Parse the xsd")
 @option(
     "--schema_file",
     prompt="Name of the schema XSD file",
@@ -118,67 +108,64 @@ def summary():
     type=ClickPath(),
     help="Parse a schema",
 )
-def parse(schema_file):
-    """Parse a schema XSD file"""
+@pass_context
+def parse(ctx, schema_file):
+    """Parse the schema XSD file."""
     if schema_reader.process_schema(schema_file):
         secho(f"The schema {schema_file} has been successfully parsed", fg=INFO_COLOR)
     else:
         secho(f"An error occurred when parsing the  {schema_file}", fg=ERROR_COLOR)
 
 
-@schema.command()
+@schema.command(short_help="List attributeGroup")
 @option("-r", "--row_numbers", flag_value=True, help="Use this flag to turn off row numbers", default=True)
-def attribute_groups(row_numbers):
+@pass_context
+def attribute_groups(ctx, row_numbers):
     """Output all elements of type `xs:attributeGroup`"""
-    result = schema_reader.tbl_attribute_groups()
-    if row_numbers:
-        result = number_table_rows(result, 1)
-    secho(tabulate(result, headers=list(result.keys())), fg=INFO_COLOR)
+    result = dict_to_list(schema_reader.tbl_attribute_groups(), row_numbers)
+    secho(tabulate(result, headers='firstrow'), fg=INFO_COLOR)
 
 
-@schema.command()
+@schema.command(short_help="List simpleType")
 @option("-r", "--row_numbers", flag_value=True, help="Use this flag to turn off row numbers", default=True)
-def simple_types(row_numbers):
-    """Output all elements of type `xs:simpleType`"""
-    result = schema_reader.tbl_simple_types()
-    if row_numbers:
-        result = number_table_rows(result, 1)
-    secho(tabulate(result, headers=list(result.keys())), fg=INFO_COLOR)
+@pass_context
+def simple_types(ctx, row_numbers):
+    """Output all the schema elements of type `xs:simpleType`."""
+    result = dict_to_list(schema_reader.tbl_simple_types(), row_numbers)
+    secho(tabulate(result, headers='firstrow'), fg=INFO_COLOR)
 
 
-@schema.command()
+@schema.command(short_help="List all attribute elements")
 @option("-r", "--row_numbers", flag_value=True, help="Use this flag to turn off row numbers", default=True)
-def attributes(row_numbers):
-    """Output all elements of type `xs:attribute`"""
-    result = schema_reader.tbl_attribute_types()
-    if row_numbers:
-        result = number_table_rows(result, 1)
-    secho(tabulate(result, headers=list(result.keys())), fg=INFO_COLOR)
+@pass_context
+def attributes(ctx, row_numbers):
+    """Output all schema elements of type `xs:attribute`."""
+    result = dict_to_list(schema_reader.tbl_attribute_types(), row_numbers)
+    secho(tabulate(result, headers='firstrow'), fg=INFO_COLOR)
 
 
-@schema.command()
+@schema.command(short_help="List all complexType elements")
 @option("-r", "--row_numbers", flag_value=True, help="Use this flag to turn off row numbers", default=True)
-def complex(row_numbers):
-    """Output all elements of type `xs:complexType`"""
-    result = schema_reader.tbl_complex_types()
-    if row_numbers:
-        result = number_table_rows(result, 1)
-    secho(tabulate(result, headers=list(result.keys())), fg=INFO_COLOR)
+@pass_context
+def complex(ctx, row_numbers):
+    """Output all schema elements of type `xs:complexType`."""
+    result = dict_to_list(schema_reader.tbl_complex_types(), row_numbers)
+    secho(tabulate(result, headers='firstrow'), fg=INFO_COLOR)
 
 
-@schema.command()
+@schema.command(short_help="List all element types")
 @option("-r", "--row_numbers", flag_value=True, help="Use this flag to turn off row numbers", default=True)
-def element_types(row_numbers):
-    """Output all elements of type `xs:element`"""
-    result = schema_reader.tbl_element_types()
-    if row_numbers:
-        result = number_table_rows(result, 1)
-    secho(tabulate(result, headers=list(result.keys())), fg=INFO_COLOR)
+@pass_context
+def element_types(ctx, row_numbers):
+    """Output all schema elements of type `xs:element`."""
+    result = dict_to_list(schema_reader.tbl_element_types(), row_numbers)
+    secho(tabulate(result, headers='firstrow'), fg=INFO_COLOR)
 
 
-@schema.command()
-def namespace():
-    """Output all schema namespaces with associated prefix"""
+@schema.command(short_help="List schema namespaces")
+@pass_context
+def namespace(ctx):
+    """Output all schema namespaces with its associated prefix."""
     # schema_reader = ctx.obj
     result = schema_reader.get_namespaces()
     table = defaultdict(list)
@@ -188,9 +175,10 @@ def namespace():
     secho(tabulate(table, headers=list(table.keys())), fg=INFO_COLOR)
 
 
-@schema.command()
+@schema.command(short_help="inspect a schema element")
 @argument("element", type=str, nargs=1)
-def inspect(element):
+@pass_context
+def inspect(ctx, element):
     """Inspect a named schema ELEMENT. Enter the named ELEMENT to be inspected "
     including any namespace prefix on the form `prefix:Name`.
     The output includes all attributes and subtypes of the ELEMENT and"
@@ -218,20 +206,22 @@ def inspect(element):
             secho(f"Test: {test}", fg=INFO_COLOR)
     else:
         secho(
-            f"ERROR: The {element} is not defined in the schema",
+            f"ERROR: The {element} named entity is not defined in the schema",
             fg=ERROR_COLOR,
         )
         global_elements = [
             f"{element.get_prefix()}:{element.get_name()}" for element in schema_reader.get_ocx_elements()
         ]
         closest = max([(fuzz.token_set_ratio(element, j), j) for j in global_elements])
-        secho(f"INFO: Did you mean {closest[1]}?", fg=INFO_COLOR)
+        ans = prompt(f"Did you mean {closest[1]}? (Yes/No)", default='Yes')
+        if ans.lower() == "yes" or ans.lower() == 'y':
+            ctx.invoke(inspect, closest[1])
 
 
-@schema.command()
+@schema.command(short_help="List all schema elements")
 @option("-r", "--row_numbers", flag_value=True, help="Use this flag to turn off row numbers", default=True)
 def elements(row_numbers):
-    """Output all global schema elements"""
+    """Output all the global schema elements."""
 
     table = defaultdict(list)
     ocx_elements = schema_reader.get_ocx_elements()

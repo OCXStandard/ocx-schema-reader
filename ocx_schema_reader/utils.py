@@ -6,7 +6,7 @@ import os
 import re
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 
 import yaml
 
@@ -81,6 +81,25 @@ def tree(paths: dict, prefix: str = ""):
             extension = branch if pointer == tee else space
             # i.e. space because last, └── , above so no more |
             yield from tree(paths[path], prefix=prefix + extension)
+
+
+def dict_to_list(items: dict, row_numbers: bool = False) -> List:
+    """ Convert a dict to a list of dict values with the keys as first row in the list"""
+    result = []
+    i = 0
+    for key, item in items.items():
+        if i == 0:
+            if row_numbers:
+                result += [['#'] + list(item.keys())]
+            else:
+                result += list(item.keys())
+        else:
+            if row_numbers:
+                result += [[i] + list(item.values())]
+            else:
+                result += list(item.values())
+        i += 1
+    return result
 
 
 def number_table_rows(table: dict, first_index: int = 0) -> Dict:

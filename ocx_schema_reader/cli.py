@@ -14,8 +14,10 @@ from tabulate import tabulate
 
 from ocx_schema_reader.schema_elements import LxmlElement
 from ocx_schema_reader.schema_reader import OcxSchema
+
 from ocx_schema_reader.utils import (dict_to_list, number_table_rows)
 from ocx_schema_reader import logger, INFO_COLOR, ERROR_COLOR, APP, DEFAULT_SCHEMA, SCHEMA_FOLDER
+
 
 schema_reader = OcxSchema(logger, SCHEMA_FOLDER)
 

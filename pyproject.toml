@@ -68,6 +68,8 @@ lxml = "~4.9.2"
 requests = "2.28.1"
 furo = "^2022.12.7"
 numpy = "^1.23.5"
+click-extra = "^3.5.0"
+click-shell = "^2.1"
 
 
 [tool.poetry.dev-dependencies]

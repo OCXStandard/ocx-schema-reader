@@ -615,7 +615,7 @@ class OcxSchema:
         namespaces = [(ns, self._namespace[ns]) for ns in self._namespace]
         return SchemaSummary(schema_version, schema_types, namespaces).to_dict()
 
-    def tbl_attribute_groups(self) -> List[SchemaType]:
+    def tbl_attribute_groups(self) -> Dict:
         """All parsed ``attributeGroup`` types in the schema and any referenced schemas'
 
         Returns:

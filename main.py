@@ -46,26 +46,31 @@ def table_defaults(ctx):
     glob_ctx = ctx.obj
     fmt = glob_ctx.get_table_format()
     sep = glob_ctx.get_column_separator()
+    if sep == 'U+0020':
+        sep = 'whitespace'
     out = glob_ctx.get_table_output()
-    table = [['Format', 'Column seperator', 'Output'], [fmt, sep, out]]
+    numbering = glob_ctx.table_row_numbering()
+    table = [['Format', 'Column seperator', 'Output', 'Row index'], [fmt, sep, out, numbering]]
     echo(tabulate(table, headers='firstrow'))
 
 
 @cli.command(short_help="Table formatting")
-@option("--fmt", help="The formatting instruction for tables", default='simple',
+@option("-f", "--fmt", help="The formatting instruction for tables", default='simple',
         type=Choice(
             ['plain', 'simple', 'github', 'grid', 'fancy_grid', 'pipe', 'orgtbl', 'rst', 'mediawiki',
              'html', 'latex', 'latex_raw', 'latex_booktabs', 'latex_longtable', 'tsv'],
             case_sensitive=False))
-@option("--sep", help="The column seperator. Default = whitespace", default='')
-@option("--output", help="Output the table to a file. Default =stdout`", default='stdout')
+@option("-s", "--sep", help="The column seperator. Default = whitespace", default='')
+@option("-o", "--output", help="Output the table to a file. Default =stdout`", default='stdout')
+@option("--index/--no-index", help="Turn row indexing on or off", default=True)
 @pass_context
-def table_options(ctx, fmt, sep, output):
+def table_options(ctx, fmt, sep, output, index):
     """ Set the table options"""
     glob_ctx = ctx.obj
-    glob_ctx.table_format(fmt)
-    glob_ctx.table_output(output)
-    glob_ctx.table_column_separator(sep)
+    glob_ctx.option_table_format(fmt)
+    glob_ctx.option_table_output(output)
+    glob_ctx.option_table_column_separator(sep)
+    glob_ctx.option_row_numbering(index)
 
 
 cli.add_command(schema)

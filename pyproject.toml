@@ -70,6 +70,7 @@ furo = "^2022.12.7"
 numpy = "^1.23.5"
 click-extra = "^3.5.0"
 click-shell = "^2.1"
+Sphinx = "^5.3.0"
 
 
 [tool.poetry.dev-dependencies]

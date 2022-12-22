@@ -84,7 +84,9 @@ def tree(paths: dict, prefix: str = ""):
 
 
 def dict_to_list(items: dict, row_numbers: bool = False) -> List:
-    """ Convert a dict to a list of dict values with the keys as first row in the list"""
+    """ Convert a dict to a list of dict values with the keys as first row in the list and
+        add row numbers in first column if `row_numbers` is True.
+    """
     result = []
     i = 0
     for key, item in items.items():

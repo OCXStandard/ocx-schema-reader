@@ -57,7 +57,7 @@ shell: install ## Launch an IPython session
 RANDOM_SEED ?= $(shell date +%s)
 FAILURES := .cache/pytest/v/cache/lastfailed
 
-test:  ## Run unit and integration tests
+test:  .pytest_cache/CACHEDIR.TAG  ## Run unit and integration tests
 	@pytest --durations=5 -v --cov-report html --cov ocx_schema_reader .\tests\
 
 # CHECKS ######################################################################

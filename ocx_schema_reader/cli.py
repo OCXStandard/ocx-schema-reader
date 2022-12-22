@@ -1,8 +1,7 @@
 #  Copyright (c) 3-2022. OCX Consortium https://3docx.org. See the LICENSE
 
-import logging
+
 from collections import defaultdict
-from pathlib import Path
 
 import numpy as np
 from click_shell import shell
@@ -14,8 +13,8 @@ from tabulate import tabulate
 
 from ocx_schema_reader.schema_elements import LxmlElement
 from ocx_schema_reader.schema_reader import OcxSchema
-from ocx_schema_reader.utils import (dict_to_list, number_table_rows)
-from ocx_schema_reader import logger, INFO_COLOR, ERROR_COLOR, APP, DEFAULT_SCHEMA, SCHEMA_FOLDER
+from ocx_schema_reader.utils import (number_table_rows)
+from ocx_schema_reader import logger, INFO_COLOR, ERROR_COLOR, APP, SCHEMA_FOLDER
 
 schema_reader = OcxSchema(logger, SCHEMA_FOLDER)
 
@@ -118,48 +117,43 @@ def parse(ctx, schema_file):
 
 
 @schema.command(short_help="List attributeGroup")
-@option("-r", "--row_numbers", flag_value=True, help="Use this flag to turn off row numbers", default=True)
 @pass_context
-def attribute_groups(ctx, row_numbers):
+def attribute_groups(ctx):
     """Output all elements of type `xs:attributeGroup`"""
-    result = dict_to_list(schema_reader.tbl_attribute_groups(), row_numbers)
-    secho(tabulate(result, headers='firstrow'), fg=INFO_COLOR)
+    context = ctx.obj
+    context.output_table(schema_reader.tbl_attribute_groups())
 
 
 @schema.command(short_help="List simpleType")
-@option("-r", "--row_numbers", flag_value=True, help="Use this flag to turn off row numbers", default=True)
 @pass_context
-def simple_types(ctx, row_numbers):
+def simple_types(ctx):
     """Output all the schema elements of type `xs:simpleType`."""
-    result = dict_to_list(schema_reader.tbl_simple_types(), row_numbers)
-    secho(tabulate(result, headers='firstrow'), fg=INFO_COLOR)
+    context = ctx.obj
+    context.output_table(schema_reader.tbl_simple_types())
 
 
 @schema.command(short_help="List all attribute elements")
-@option("-r", "--row_numbers", flag_value=True, help="Use this flag to turn off row numbers", default=True)
 @pass_context
-def attributes(ctx, row_numbers):
+def attributes(ctx):
     """Output all schema elements of type `xs:attribute`."""
-    result = dict_to_list(schema_reader.tbl_attribute_types(), row_numbers)
-    secho(tabulate(result, headers='firstrow'), fg=INFO_COLOR)
+    context = ctx.obj
+    context.output_table(schema_reader.tbl_attribute_types())
 
 
 @schema.command(short_help="List all complexType elements")
-@option("-r", "--row_numbers", flag_value=True, help="Use this flag to turn off row numbers", default=True)
 @pass_context
-def complex(ctx, row_numbers):
+def complex(ctx):
     """Output all schema elements of type `xs:complexType`."""
-    result = dict_to_list(schema_reader.tbl_complex_types(), row_numbers)
-    secho(tabulate(result, headers='firstrow'), fg=INFO_COLOR)
+    context = ctx.obj
+    context.output_table(schema_reader.tbl_complex_types())
 
 
 @schema.command(short_help="List all element types")
-@option("-r", "--row_numbers", flag_value=True, help="Use this flag to turn off row numbers", default=True)
 @pass_context
-def element_types(ctx, row_numbers):
+def element_types(ctx):
     """Output all schema elements of type `xs:element`."""
-    result = dict_to_list(schema_reader.tbl_element_types(), row_numbers)
-    secho(tabulate(result, headers='firstrow'), fg=INFO_COLOR)
+    context = ctx.obj
+    context.output_table(schema_reader.tbl_element_types())
 
 
 @schema.command(short_help="List schema namespaces")

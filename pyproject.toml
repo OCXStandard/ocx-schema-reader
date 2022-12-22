@@ -56,7 +56,7 @@ ocx-schema-reader = 'main:cli'
 
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.8.1"
 pyyaml = "^6.0"
 click = "^8.1.3"
 click-logging = "^1.0.1"
@@ -66,7 +66,6 @@ tabulate = "0.9.0"
 python-Levenshtein = "^0.20.8"
 lxml = "~4.9.2"
 requests = "2.28.1"
-furo = "^2022.12.7"
 numpy = "^1.23.5"
 click-extra = "^3.5.0"
 click-shell = "^2.1"
@@ -89,12 +88,6 @@ setuptools = "^65.6.3"
 bandit = "^1.7.4"
 bump2version = "^1.0.1"
 
-
-[build-system]
-# requires = ["poetry-core>=1.0.0"]
-# build-backend = "poetry.core.masonry.api"
-#requires = ["setuptools"]
-#build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 119
@@ -164,4 +157,10 @@ skips = ["B320", "B410"]
 #  name = "publish"
 #  cmd = "./publish.sh"
 
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+#requires = ["setuptools"]
+#build-backend = "setuptools.build_meta"
 

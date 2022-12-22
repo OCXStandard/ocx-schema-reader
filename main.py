@@ -11,11 +11,12 @@ in subcommands when invoked as `python -m meta_package_manager <command>`.
 from __future__ import annotations
 
 from click_shell import shell
-from click import pass_context, clear, option, echo, Choice
+from click import pass_context, clear, option, secho, Choice
 from tabulate import tabulate
 
 from ocx_schema_reader.cli import schema
 from ocx_schema_reader.cli_context import GlobalContext
+from ocx_schema_reader import ERROR_COLOR, INFO_COLOR
 
 
 @shell(prompt=f'CLI > ', intro=f'Starting CLI...')
@@ -47,8 +48,9 @@ def table_defaults(ctx):
     fmt = glob_ctx.get_table_format()
     sep = glob_ctx.get_column_separator()
     out = glob_ctx.get_table_output()
-    table = [['Format', 'Column seperator', 'Output'], [fmt, sep, out]]
-    echo(tabulate(table, headers='firstrow'))
+    index_rows = glob_ctx.table_row_numbering()
+    table = [['Format', 'Column seperator', 'Output', 'Row indexes'], [fmt, sep, out, index_rows]]
+    secho(tabulate(table, headers='firstrow'), color=INFO_COLOR)
 
 
 @cli.command(short_help="Table formatting")

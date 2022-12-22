@@ -33,7 +33,7 @@ $(DEPENDENCIES): poetry.lock
 
 # ifndef CI
 poetry.lock: pyproject.toml
-	poetry lock --no-update
+	poetry lock
 	@ touch $@
 # endif
 
@@ -58,7 +58,7 @@ RANDOM_SEED ?= $(shell date +%s)
 FAILURES := .cache/pytest/v/cache/lastfailed
 
 test:  ## Run unit and integration tests
-	@pytest --durations=5 -v --cov-report html --cov ocx_schema_reader .\tests\
+	@pytest --durations=5 -v --cov-report html --cov ocx_schema_reader tests\
 
 # CHECKS ######################################################################
 lint:	## Run formatters, linters, and static analysis

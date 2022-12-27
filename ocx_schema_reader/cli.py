@@ -5,19 +5,24 @@ from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
-from click_shell import shell
-from click import Choice, prompt
+from click import Choice
 from click import Path as ClickPath
-from click import argument, option, pass_context, secho
+from click import argument, option, pass_context, prompt, secho
+from click_shell import shell
 from fuzzywuzzy import fuzz
 from tabulate import tabulate
 
+from ocx_schema_reader import (
+    APP,
+    DEFAULT_SCHEMA,
+    ERROR_COLOR,
+    INFO_COLOR,
+    SCHEMA_FOLDER,
+    logger,
+)
 from ocx_schema_reader.schema_elements import LxmlElement
 from ocx_schema_reader.schema_reader import OcxSchema
-
-from ocx_schema_reader.utils import (dict_to_list, number_table_rows)
-from ocx_schema_reader import logger, INFO_COLOR, ERROR_COLOR, APP, DEFAULT_SCHEMA, SCHEMA_FOLDER
-
+from ocx_schema_reader.utils import dict_to_list, number_table_rows
 
 schema_reader = OcxSchema(logger, SCHEMA_FOLDER)
 
@@ -25,7 +30,7 @@ schema_reader = OcxSchema(logger, SCHEMA_FOLDER)
 @shell(prompt=f"{APP} > ", intro=f"Starting {APP}..")
 @pass_context
 def schema(ctx):
-    """ The schema subcommands"""
+    """The schema subcommands"""
     pass
 
 
@@ -54,8 +59,7 @@ def assign_schema(ctx, schema_file):
     help="Assign the default schema folder",
     type=ClickPath(exists=True),
 )
-def \
-        assign_folder(schema_folder):
+def assign_folder(schema_folder):
     """Assign default OCX schema"""
     schema_reader.put_schema_folder(schema_folder)
     secho(
@@ -75,7 +79,7 @@ def \
     help="Print the list of schema changes for the current version (default) or all historic versions",
 )
 def changes(ctx, version):
-    """ Print the list of schema changes for the current version (default) or all historic versions"""
+    """Print the list of schema changes for the current version (default) or all historic versions"""
     schema_changes = schema_reader.get_schema_changes()
     if version.lower() == "current":
         table = defaultdict(list)
@@ -84,7 +88,7 @@ def changes(ctx, version):
         where = np.argwhere(arr == current_version)
         i, k = where[0], where[-1]
         for key, result in schema_changes.items():
-            sliced = result[i[0]: k[0]]
+            sliced = result[i[0] : k[0]]
             table[key] = sliced
         schema_changes = table
     secho(tabulate(schema_changes, headers=list(schema_changes.keys())), fg=INFO_COLOR)
@@ -125,7 +129,7 @@ def parse(ctx, schema_file):
 def attribute_groups(ctx, row_numbers):
     """Output all elements of type `xs:attributeGroup`"""
     result = dict_to_list(schema_reader.tbl_attribute_groups(), row_numbers)
-    secho(tabulate(result, headers='firstrow'), fg=INFO_COLOR)
+    secho(tabulate(result, headers="firstrow"), fg=INFO_COLOR)
 
 
 @schema.command(short_help="List simpleType")
@@ -134,7 +138,7 @@ def attribute_groups(ctx, row_numbers):
 def simple_types(ctx, row_numbers):
     """Output all the schema elements of type `xs:simpleType`."""
     result = dict_to_list(schema_reader.tbl_simple_types(), row_numbers)
-    secho(tabulate(result, headers='firstrow'), fg=INFO_COLOR)
+    secho(tabulate(result, headers="firstrow"), fg=INFO_COLOR)
 
 
 @schema.command(short_help="List all attribute elements")
@@ -143,7 +147,7 @@ def simple_types(ctx, row_numbers):
 def attributes(ctx, row_numbers):
     """Output all schema elements of type `xs:attribute`."""
     result = dict_to_list(schema_reader.tbl_attribute_types(), row_numbers)
-    secho(tabulate(result, headers='firstrow'), fg=INFO_COLOR)
+    secho(tabulate(result, headers="firstrow"), fg=INFO_COLOR)
 
 
 @schema.command(short_help="List all complexType elements")
@@ -152,7 +156,7 @@ def attributes(ctx, row_numbers):
 def complex(ctx, row_numbers):
     """Output all schema elements of type `xs:complexType`."""
     result = dict_to_list(schema_reader.tbl_complex_types(), row_numbers)
-    secho(tabulate(result, headers='firstrow'), fg=INFO_COLOR)
+    secho(tabulate(result, headers="firstrow"), fg=INFO_COLOR)
 
 
 @schema.command(short_help="List all element types")
@@ -161,7 +165,7 @@ def complex(ctx, row_numbers):
 def element_types(ctx, row_numbers):
     """Output all schema elements of type `xs:element`."""
     result = dict_to_list(schema_reader.tbl_element_types(), row_numbers)
-    secho(tabulate(result, headers='firstrow'), fg=INFO_COLOR)
+    secho(tabulate(result, headers="firstrow"), fg=INFO_COLOR)
 
 
 @schema.command(short_help="List schema namespaces")
@@ -215,8 +219,8 @@ def inspect(ctx, element):
             f"{element.get_prefix()}:{element.get_name()}" for element in schema_reader.get_ocx_elements()
         ]
         closest = max([(fuzz.token_set_ratio(element, j), j) for j in global_elements])
-        ans = prompt(f"Did you mean {closest[1]}? (Yes/No)", default='Yes')
-        if ans.lower() == "yes" or ans.lower() == 'y':
+        ans = prompt(f"Did you mean {closest[1]}? (Yes/No)", default="Yes")
+        if ans.lower() == "yes" or ans.lower() == "y":
             ctx.invoke(inspect, closest[1])
 
 

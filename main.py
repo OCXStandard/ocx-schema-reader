@@ -10,20 +10,20 @@ in subcommands when invoked as `python -m meta_package_manager <command>`.
 
 from __future__ import annotations
 
+from click import Choice, clear, option, pass_context, secho
 from click_shell import shell
-from click import pass_context, clear, option, secho, Choice
 from tabulate import tabulate
 
+from ocx_schema_reader import ERROR_COLOR, INFO_COLOR
 from ocx_schema_reader.cli import schema
 from ocx_schema_reader.cli_context import GlobalContext
-from ocx_schema_reader import ERROR_COLOR, INFO_COLOR
 
 
-@shell(prompt=f'CLI > ', intro=f'Starting CLI...')
+@shell(prompt=f"CLI > ", intro=f"Starting CLI...")
 @pass_context
 def cli(ctx):
     """
-        Main CLI
+    Main CLI
     """
     ctx.obj = GlobalContext()
 
@@ -49,21 +49,41 @@ def table_defaults(ctx):
     sep = glob_ctx.get_column_separator()
     out = glob_ctx.get_table_output()
     index_rows = glob_ctx.table_row_numbering()
-    table = [['Format', 'Column seperator', 'Output', 'Row indexes'], [fmt, sep, out, index_rows]]
-    secho(tabulate(table, headers='firstrow'), color=INFO_COLOR)
+    table = [["Format", "Column seperator", "Output", "Row indexes"], [fmt, sep, out, index_rows]]
+    secho(tabulate(table, headers="firstrow"), color=INFO_COLOR)
 
 
 @cli.command(short_help="Table formatting")
-@option("--fmt", help="The formatting instruction for tables", default='simple',
-        type=Choice(
-            ['plain', 'simple', 'github', 'grid', 'fancy_grid', 'pipe', 'orgtbl', 'rst', 'mediawiki',
-             'html', 'latex', 'latex_raw', 'latex_booktabs', 'latex_longtable', 'tsv'],
-            case_sensitive=False))
-@option("--sep", help="The column seperator. Default = whitespace", default='')
-@option("--output", help="Output the table to a file. Default =stdout`", default='stdout')
+@option(
+    "--fmt",
+    help="The formatting instruction for tables",
+    default="simple",
+    type=Choice(
+        [
+            "plain",
+            "simple",
+            "github",
+            "grid",
+            "fancy_grid",
+            "pipe",
+            "orgtbl",
+            "rst",
+            "mediawiki",
+            "html",
+            "latex",
+            "latex_raw",
+            "latex_booktabs",
+            "latex_longtable",
+            "tsv",
+        ],
+        case_sensitive=False,
+    ),
+)
+@option("--sep", help="The column seperator. Default = whitespace", default="")
+@option("--output", help="Output the table to a file. Default =stdout`", default="stdout")
 @pass_context
 def table_options(ctx, fmt, sep, output):
-    """ Set the table options"""
+    """Set the table options"""
     glob_ctx = ctx.obj
     glob_ctx.table_format(fmt)
     glob_ctx.table_output(output)

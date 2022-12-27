@@ -1,8 +1,10 @@
 #  Copyright (c) 3-2022. OCX Consortium https://3docx.org. See the LICENSE
 
-from pathlib import Path
 import logging
+from pathlib import Path
+
 import click_log
+
 from ocx_schema_reader.utils import ROOT_DIR, load_yaml_config
 
 """Expose package-wide elements."""

@@ -3,6 +3,8 @@
 /log/
 /docs/build/
 /schema_versions/
+# Python environments
+/.macosenv/
 *.gml
 *.png
 *.svg

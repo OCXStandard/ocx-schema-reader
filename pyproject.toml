@@ -71,7 +71,8 @@ click-extra = "^3.5.0"
 click-shell = "^2.1"
 
 
-[tool.poetry.dev-dependencies]
+[project.optional-dependencies]
+dev = ["pytest"]
 Sphinx = "^5.3.0"
 sphinx-autodoc-typehints = "^1.19.5"
 pre-commit = "^2.20.0"

@@ -1,26 +1,67 @@
 # A self-documenting Makefile
 # You can set these variables from the command line, and also
 # from the environment for the first two.
+
+UNAME := $(shell uname)
+host-type := $(shell arch)
+MACOS_ENV = .macosenv
+WIN_ENV = .win_env
 PACKAGE := ocx_schema_reader
 MODULES := $(wildcard $(PACKAGE)/*.py)
 COMMIT_HASH = `git rev-parse --short HEAD 2>/dev/null`
-BUILD_DATE = `date + %FT%T%Z`
+BUILD_DATE = `date +%D.%T`
+# Determine which VENV to use
+ifeq ($(OS),Windows_NT)
+	VENV = ${WIN_ENV}
+else
+    VENV = ${MACOS_ENV}
+endif
+
+# PROJECT DEPENDENCIES ########################################################
+
+VIRTUAL_ENV ?= ${VENV}
+DEPENDENCIES := $(VIRTUAL_ENV)/$(shell cksum pyproject.toml)
 
 
+# Color output
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 
+var:  ## List Makefile variables
+	@echo ""${BLUE}Operating system: $(UNAME)${NC}""
+	@echo ""${BLUE}Package: ${PACKAGE}${NC} ""
+	@echo ""${BLUE}Modules: ${MODULES}${NC} ""
+	@echo ""${BLUE}Commit HASH: ${COMMIT_HASH}${NC} ""
+	@echo ""${BLUE}Build date: ${BUILD_DATE}${NC} ""
+	@echo ""${BLUE}Virtual environment: ${VENV}${NC} ""
+	@echo ""${BLUE}DPENDENCIES: ${DEPENDENCIES}${NC} ""
+	@echo ""${BLUE}Host: ${host-type}${NC} ""
+
+# INIT #########################################################
+
+requirements: ./requirements
+	mkdir ./requirement
+
+init: win macos
+	@echo ""${BLUE}Installing pip-compile-multi in ${VENV}${NC}""
+	pip install pip-compile-multi
+
+
 # MAIN TASKS ##################################################################
+
+win: ${WIN_ENV}
+	python3 -m venv ${WIN_ENV}
+	$(shell ${WIN_ENV}\\Scripts\\activate)
+
+macos: ${MACOS_ENV}
+	python3 -m venv ${MACOS_ENV}
+	$(shell . ${MACOS_ENV}/bin/activate)
+
 
 .PHONY: all
 all: install
 
-# PROJECT DEPENDENCIES ########################################################
-
-# VIRTUAL_ENV ?= .venv
-# DEPENDENCIES := $(VIRTUAL_ENV)/.poetry-$(cksum pyproject.toml)
-DEPENDENCIES := pyproject.lock
 
 .PHONY: install
 install: $(DEPENDENCIES) .cache

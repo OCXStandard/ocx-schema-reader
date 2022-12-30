@@ -29,35 +29,17 @@ NC='\033[0m' # No Color
 
 
 var:  ## List Makefile variables
-	@echo ""${BLUE}Operating system: $(UNAME)${NC}""
-	@echo ""${BLUE}Package: ${PACKAGE}${NC} ""
-	@echo ""${BLUE}Modules: ${MODULES}${NC} ""
-	@echo ""${BLUE}Commit HASH: ${COMMIT_HASH}${NC} ""
-	@echo ""${BLUE}Build date: ${BUILD_DATE}${NC} ""
-	@echo ""${BLUE}Virtual environment: ${VENV}${NC} ""
-	@echo ""${BLUE}DPENDENCIES: ${DEPENDENCIES}${NC} ""
-	@echo ""${BLUE}Host: ${host-type}${NC} ""
-
-# INIT #########################################################
-
-requirements: ./requirements
-	mkdir ./requirement
-
-init: win macos
-	@echo ""${BLUE}Installing pip-compile-multi in ${VENV}${NC}""
-	pip install pip-compile-multi
+	@printf "\033[0;34mOperating system: $(UNAME)\033[0m\n"
+	@printf "\033[0;34mPackage: ${PACKAGE}\033[0m \n"
+	@printf "\033[0;34mModules: ${MODULES}\033[0m \n"
+	@printf "\033[0;34mCommit HASH: ${COMMIT_HASH}\033[0m \n"
+	@printf "\033[0;34mBuild date: ${BUILD_DATE}\033[0m \n"
+	@printf "\033[0;34mVirtual environment: ${VENV}\033[0m \n"
+	@printf "\033[0;34mDPENDENCIES: ${DEPENDENCIES}\033[0m \n"
+	@printf "\033[0;34mHost: ${host-type}\033[0m \n"
 
 
 # MAIN TASKS ##################################################################
-
-win: ${WIN_ENV}
-	python3 -m venv ${WIN_ENV}
-	$(shell ${WIN_ENV}\\Scripts\\activate)
-
-macos: ${MACOS_ENV}
-	python3 -m venv ${MACOS_ENV}
-	$(shell . ${MACOS_ENV}/bin/activate)
-
 
 .PHONY: all
 all: install
@@ -66,9 +48,9 @@ all: install
 .PHONY: install
 install: $(DEPENDENCIES) .cache
 
-$(DEPENDENCIES): poetry.lock
+$(DEPENDENCIES):
 	#@ rm -rf $(VIRTUAL_ENV)/.poetry-*
-	@ poetry config virtualenvs.in-project false
+	poetry config virtualenvs.in-project false
 	poetry install
 	@ touch $@
 
@@ -105,9 +87,9 @@ test:  ## Run unit and integration tests
 lint:	## Run formatters, linters, and static analysis
 	@printf "\033[36m%s\033[0m\n"  "Running black against source and test files..."
 	@black . -v
-	@echo "\n${BLUE}Running Flake8 against source and test files...${NC}\n"
+	@printf "\n\033[0;34mRunning Flake8 against source and test files...\033[0m\n"
 	@flake8 -v
-	@echo "\n${BLUE}Running Bandit against source files...${NC}\n"
+	@printf "\n\033[0;34mRunning Bandit against source files...\033[0m\n"
 	@bandit -r -c pyproject.toml .
 
 

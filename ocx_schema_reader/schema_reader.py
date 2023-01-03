@@ -161,7 +161,12 @@ class OcxSchema:
             True if all schemas are parsed successfully, else returns False
 
         """
-        if "http" in schema_url:
+
+        if "http" not in schema_url:
+            if not Path(schema_url).exists():
+                self.log.error(f'The xsd file {schema_url} does not exist')
+                return False
+        else:
             try:
                 remote_file = Path(schema_url).name
                 file = Path(self._local_folder) / remote_file
@@ -174,11 +179,11 @@ class OcxSchema:
                 schema_url = file
             except HTTPError as e:
                 self.log.error(f'Failed to access schema from "{schema_url}""')
-                raise e
+                return False
         try:
             self._is_parsed = self._parser.parse(schema_url)
         except BaseException as e:
-            print(e.with_traceback)
+            self.log.error(e.with_traceback)
             return False
         if self._is_parsed:
             self.log.debug(f'Successfully parsed xsd schema with location "{schema_url}"')
@@ -603,17 +608,17 @@ class OcxSchema:
         """
         return self._get_schema_types("attributeGroup")
 
-    def tbl_summary(self) -> Dict:
+    def tbl_summary(self) -> SchemaSummary:
         """The summary of the parsed schema and any referenced schemas'
 
         Returns:
             The schema summary
         """
 
-        schema_version = self.get_schema_version()
+        schema_version = [('Schema Version', self.get_schema_version())]
         schema_types = [(schema_type, len(self._all_types[schema_type])) for schema_type in self._all_types]
         namespaces = [(ns, self._namespace[ns]) for ns in self._namespace]
-        return SchemaSummary(schema_version, schema_types, namespaces).to_dict()
+        return SchemaSummary(schema_version, schema_types, namespaces)
 
     def tbl_attribute_groups(self) -> Dict:
         """All parsed ``attributeGroup`` types in the schema and any referenced schemas'

@@ -9,14 +9,34 @@ in subcommands when invoked as `python -m meta_package_manager <command>`.
 """
 
 from __future__ import annotations
-
+from pathlib import Path
 from click_shell import shell
 from click import pass_context, clear, option, secho, Choice
 from tabulate import tabulate
+import yaml
+import logging
+from logging import config
+import colorlog
 
 from ocx_schema_reader.cli import schema
 from ocx_schema_reader.cli_context import GlobalContext
 from ocx_schema_reader import ERROR_COLOR, INFO_COLOR
+from ocx_schema_reader.utils import ROOT_DIR
+
+LOG_CONFIG_YAML = 'log_config.yaml'
+conf = Path(ROOT_DIR) / LOG_CONFIG_YAML
+
+with open(conf) as f:
+    log_config = yaml.safe_load(f)
+
+hndle = log_config['handlers'].get('file')
+LOG_FILE = hndle.get('filename')
+# Set the logging configuration
+config.dictConfig(log_config)
+bold_seq = "\033[1m"
+colorlog_format = f"{bold_seq} " "%(log_color)s " f"{log_config.get('formatters').get('std_out').get('format')}"
+colorlog.basicConfig(format=colorlog_format)
+logger = logging.getLogger()  # Todo: Color logging does not work from main.py
 
 
 @shell(prompt=f'CLI > ', intro=f'Starting CLI...')
@@ -25,7 +45,8 @@ def cli(ctx):
     """
         Main CLI
     """
-    ctx.obj = GlobalContext()
+    secho(f'Effective log level is: {logging.getLevelName(logger.getEffectiveLevel())}', color=INFO_COLOR)
+    ctx.obj = GlobalContext(logger)
 
 
 @cli.command(short_help="Clear the screen")
@@ -34,10 +55,36 @@ def clear():
     clear()
 
 
-@cli.command(short_help="Clear the screen")
-def clear():
-    """Clear the console window."""
-    clear()
+@cli.command(short_help="Set the logging level")
+@pass_context
+@option(
+    "--level",
+    "-l",
+    required=True,
+    default='INFO',
+    type=Choice(['INFO', 'WARNING', 'ERROR', 'DEBUG'],
+                case_sensitive=False)
+)
+def set_level(ctx, level):
+    """Set the application log level """
+    match level.lower():
+        case 'debug':
+            l = logging.DEBUG
+        case 'error':
+            l = logging.ERROR
+        case 'warning':
+            l = logging.WARNING
+        case _:
+            l = logging.INFO
+    logger.setLevel(l)
+    secho(f'Effective log level: {logging.getLevelName(logger.getEffectiveLevel())}', color=INFO_COLOR)
+
+
+@cli.command(short_help="Print the logging level")
+@pass_context
+def log_level(ctx):
+    """Print the application log handler levels """
+    secho(f'Effective log level: {logging.getLevelName(logger.getEffectiveLevel())}', color=INFO_COLOR)
 
 
 @cli.command(short_help="List the table options")
@@ -48,7 +95,7 @@ def table_defaults(ctx):
     fmt = glob_ctx.get_table_format()
     sep = glob_ctx.get_column_separator()
     out = glob_ctx.get_table_output()
-    index_rows = glob_ctx.table_row_numbering()
+    index_rows = glob_ctx.get_row_numbers()
     table = [['Format', 'Column seperator', 'Output', 'Row indexes'], [fmt, sep, out, index_rows]]
     secho(tabulate(table, headers='firstrow'), color=INFO_COLOR)
 
@@ -61,13 +108,16 @@ def table_defaults(ctx):
             case_sensitive=False))
 @option("--sep", help="The column seperator. Default = whitespace", default='')
 @option("--output", help="Output the table to a file. Default =stdout`", default='stdout')
+@option("--row-numbers", "-r",
+        help="Index the table rows and output row index in the first column. Default = True", default=True)
 @pass_context
-def table_options(ctx, fmt, sep, output):
+def table_options(ctx, fmt, sep, output, row_numbers):
     """ Set the table options"""
     glob_ctx = ctx.obj
     glob_ctx.table_format(fmt)
     glob_ctx.table_output(output)
     glob_ctx.table_column_separator(sep)
+    glob_ctx.table_row_numbers(row_numbers)
 
 
 cli.add_command(schema)

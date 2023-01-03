@@ -1,7 +1,7 @@
 # A self-documenting Makefile
 # You can set these variables from the command line, and also
 # from the environment for the first two.
-
+# SHELL = /bin/bash
 UNAME := $(shell uname)
 host-type := $(shell arch)
 MACOS_ENV = .macosenv
@@ -16,6 +16,14 @@ ifeq ($(OS),Windows_NT)
 else
     VENV = ${MACOS_ENV}
 endif
+
+# PROJECT setup using conda and /bin/bash
+.PHONY: conda
+conda:  ## Activate conda for SHELL
+# ~/.conda.bash_env is a one-liner: eval "$(/path/to/bin/conda shell.bash hook)"
+	export BASH_ENV=${HOME}\.conda.bash_env
+
+
 
 # PROJECT DEPENDENCIES ########################################################
 
@@ -37,6 +45,8 @@ var:  ## List Makefile variables
 	@printf "\033[0;34mVirtual environment: ${VENV}\033[0m \n"
 	@printf "\033[0;34mDPENDENCIES: ${DEPENDENCIES}\033[0m \n"
 	@printf "\033[0;34mHost: ${host-type}\033[0m \n"
+	@printf "\033[0;34mHOME: $(HOME)\033[0m \n"
+
 
 
 # MAIN TASKS ##################################################################

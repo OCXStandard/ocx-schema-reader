@@ -45,13 +45,12 @@ class LxmlParser:
             my_parser = etree.XMLParser(
                 remove_comments=False, remove_blank_text=True, ns_clean=True, collect_ids=store_ids
             )
-            self.tree = etree.parse(file, parser=my_parser)
+            self._tree = etree.parse(file, parser=my_parser)
             parsed = True
         except XMLSyntaxError as e:
-            self.log.error(e)
-            raise e
+            self._log.error(e)
         except OSError:
-            self.log.error("Failed to open file %s" % file, exc_info=True)
+            self._log.error("Failed to open file %s" % file, exc_info=True)
         return parsed
 
     def get_root(self) -> Element:
@@ -61,7 +60,7 @@ class LxmlParser:
             The XML root node
 
         """
-        return self.tree.getroot()
+        return self._tree.getroot()
 
     def lxml_version(self) -> str:
         """lxml version tag
@@ -79,7 +78,7 @@ class LxmlParser:
             The XML document type
 
         """
-        return self.tree.docinfo.public_id
+        return self._tree.docinfo.public_id
 
     def doc_url(self) -> str:
         """
@@ -87,7 +86,7 @@ class LxmlParser:
             The XML document url
 
         """
-        return self.tree.docinfo.URL
+        return self._tree.docinfo.URL
 
     def doc_encoding(self) -> str:
         """
@@ -96,7 +95,7 @@ class LxmlParser:
             The XML document encoding
 
         """
-        return self.tree.docinfo.encoding
+        return self._tree.docinfo.encoding
 
     def doc_root_name(self) -> str:
         """
@@ -105,7 +104,7 @@ class LxmlParser:
             The XML document root name
 
         """
-        return self.tree.docinfo.root_name
+        return self._tree.docinfo.root_name
 
     def doc_system_url(self) -> str:
         """
@@ -114,7 +113,7 @@ class LxmlParser:
             The XML document system URL
 
         """
-        return self.tree.docinfo.system_url
+        return self._tree.docinfo.system_url
 
     def doc_xml_version(self) -> str:
         """
@@ -123,7 +122,7 @@ class LxmlParser:
            The XML document version
 
         """
-        return self.tree.docinfo.xml_version
+        return self._tree.docinfo.xml_version
 
     def get_namespaces(self) -> Dict:
         """The dict of the defined namespaces of (prefix, namespace) as (key,value) pairs

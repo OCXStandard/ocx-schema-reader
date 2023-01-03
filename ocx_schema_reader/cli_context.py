@@ -1,7 +1,7 @@
 #  Copyright (c) 2022.  OCX Consortium https://3docx.org. See the LICENSE
 
 from typing import Any, DefaultDict, Dict
-from collections import defaultdict
+from logging import Logger
 
 
 class GlobalContext:
@@ -13,19 +13,26 @@ class GlobalContext:
             _table_output: Output tables to a file or `stdout` (default)
     """
 
-    def __init__(self):
+    def __init__(self, logger: Logger):
+        self._logger = logger
         self._tools: Dict[Any] = {}
         self._table_format: str = 'simple'
         self._table_output: str = 'stdout'
         self._table_column_separator: str = 'U+0020'  # Whitespace
+        self._row_numbers = True
 
     def register_tool(self, tool: Any):
-        """ Register a tool with the global context"""
-        self._tools[tool.__name__] = tool
+        """ Register a class instance with the global context"""
+        self._tools[tool.__class__.__name__] = tool
+        self._logger.debug(f'Registered class: {tool.__class__.__name__}')
 
     def get_tool(self, name: str) -> Any:
-        """ Return the toll with name `name`"""
+        """ Return the tool with name `name`"""
         return self._tools.get(name)
+
+    def get_logger(self) -> Logger:
+        """ Return the python `Logger` object"""
+        return self._logger
 
     def table_format(self, fmt: str = 'simple'):
         """ Set the table formatter option
@@ -85,3 +92,20 @@ class GlobalContext:
         """
         return self._table_format
 
+    def table_row_numbers(self, row_number: bool = True):
+        """ Index all table rows.
+
+            Args:
+                row_number: True if table rows are indexed, False otherwise. Default = True
+
+        """
+        self._row_numbers = row_number
+
+    def get_row_numbers(self) -> bool:
+        """ The table row index flag.
+
+            Returns:
+                sep: Row index flag
+
+        """
+        return self._row_numbers

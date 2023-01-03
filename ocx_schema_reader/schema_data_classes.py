@@ -5,7 +5,7 @@ from typing import Dict, List, Tuple
 @dataclass
 class BaseDataClass:
     """Base class for OCX dataclasses.
-    Each sub-class has to implement a field metadata with nam e``header`` for each of its attributes, for example:
+    Each sub-class has to implement a field metadata with name `header` for each of its attributes, for example:
     ```name : str = field(metadata={'header': '<User friendly field name>'})```
     """
 
@@ -57,16 +57,16 @@ class SchemaType(BaseDataClass):
 
 
 @dataclass
-class SchemaSummary(BaseDataClass):
+class SchemaSummary:
     """Class for schema summary information
 
     Args:
          schema_version: The schema version
          schema_types: Tuples of the number of schema types
-         schema_namespaces: schema namespaces
+         schema_namespaces: Tuples of namespace prefixes
 
     """
 
-    schema_version: str = field(metadata={"header": "Schema Version"})
+    schema_version: List[Tuple] = field(metadata={"header": "Schema Version"})
     schema_types: List[Tuple] = field(metadata={"header": "Schema Types"})
     schema_namespaces: List[Tuple] = field(metadata={"header": "Namespaces"})

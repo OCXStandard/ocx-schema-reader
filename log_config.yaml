@@ -11,18 +11,12 @@ handlers:
     level: INFO
   file:
     class: logging.FileHandler
-    filename: log/ocx-tools.log
+    filename: ocx-tools.log
     formatter: fh
     level: DEBUG
-  model:
-    class: logging.FileHandler
-    filename: log/model.log
-    formatter: fh
-    level: INFO
 root:
   handlers:
-  - console
-  - file
-  - model
-  level: DEBUG
+    - console
+    - file
+  level: INFO
 version: 1

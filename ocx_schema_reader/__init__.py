@@ -1,8 +1,6 @@
 #  Copyright (c) 3-2022. OCX Consortium https://3docx.org. See the LICENSE
 
 from pathlib import Path
-import logging
-import click_log
 from ocx_schema_reader.utils import ROOT_DIR, load_yaml_config
 
 """Expose package-wide elements."""
@@ -26,6 +24,3 @@ ERROR_COLOR = config.get("ERROR_COLOR")
 APP = config.get("APP")
 DEFAULT_SCHEMA = config.get("DEFAULT_SCHEMA")
 SCHEMA_FOLDER = config.get("SCHEMA_FOLDER")
-
-logger = logging.getLogger(__name__)
-click_log.basic_config(logger)

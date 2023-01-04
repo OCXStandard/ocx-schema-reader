@@ -14,7 +14,7 @@ from ocx_schema_reader.schema_elements import LxmlElement
 from ocx_schema_reader.schema_reader import OcxSchema
 from ocx_schema_reader.cli_context import GlobalContext
 
-from ocx_schema_reader.utils import (dict_to_list, number_table_rows)
+from ocx_schema_reader.utils import dict_to_list, number_table_rows
 from ocx_schema_reader import INFO_COLOR, ERROR_COLOR, APP, DEFAULT_SCHEMA, SCHEMA_FOLDER
 
 
@@ -25,15 +25,15 @@ def print_table(table: list, glob_ctx: GlobalContext, to_list: bool = True):
     index_rows = glob_ctx.get_row_numbers()
     if to_list:
         result = dict_to_list(table, index_rows)
-        secho(tabulate(result, headers='firstrow', tablefmt=fmt), fg=INFO_COLOR)
+        secho(tabulate(result, headers="firstrow", tablefmt=fmt), fg=INFO_COLOR)
     else:
-        secho(tabulate(table, headers='firstrow', tablefmt=fmt, showindex=index_rows), fg=INFO_COLOR)
+        secho(tabulate(table, headers="firstrow", tablefmt=fmt, showindex=index_rows), fg=INFO_COLOR)
 
 
 @shell(prompt=f"{APP} > ", intro=f"Starting {APP}..")
 @pass_context
 def schema(ctx):
-    """ The schema subcommands"""
+    """The schema subcommands"""
     g_ctx = ctx.obj
     logger = g_ctx.get_logger()
     schema_reader = OcxSchema(logger, SCHEMA_FOLDER)
@@ -52,7 +52,7 @@ def schema(ctx):
 )
 def assign_schema(ctx, schema_file):
     """Assign an OCX xsd file to be parsed using the `parse` subcommand."""
-    schema_reader = ctx.obj.get_tool('OcxSchema')
+    schema_reader = ctx.obj.get_tool("OcxSchema")
     schema_reader.put_default_schema(schema_file)
     secho(
         f"Assigned new default schema: {schema_reader.get_default_schema()}",
@@ -69,8 +69,8 @@ def assign_schema(ctx, schema_file):
 )
 @pass_context
 def assign_folder(ctx, schema_folder):
-    """Assign the default folder containing the schema xsd files """
-    schema_reader = ctx.obj.get_tool('OcxSchema')
+    """Assign the default folder containing the schema xsd files"""
+    schema_reader = ctx.obj.get_tool("OcxSchema")
     schema_reader.put_schema_folder(schema_folder)
     secho(
         f"Assigned new schema folder: {schema_reader.get_schema_folder()}",
@@ -89,12 +89,12 @@ def assign_folder(ctx, schema_folder):
     help="Print the list of schema changes for the current version (default) or all historic versions",
 )
 def changes(ctx, version):
-    """ Print the list of schema changes for the current version (default) or all historic versions"""
+    """Print the list of schema changes for the current version (default) or all historic versions"""
     glob_ctx = ctx.obj
-    schema_reader = glob_ctx.get_tool('OcxSchema')
+    schema_reader = glob_ctx.get_tool("OcxSchema")
     schema_changes = schema_reader.get_schema_changes()
     if schema_reader.is_parsed():
-        table = [['Version', 'Author', 'Date', 'Change']]
+        table = [["Version", "Author", "Date", "Change"]]
         current_version = schema_reader.get_schema_version()
         for c in schema_changes:
             if version.lower() == "current":
@@ -112,10 +112,10 @@ def changes(ctx, version):
 def summary(ctx):
     """Output the schema summary information."""
     glob_ctx = ctx.obj
-    schema_reader = glob_ctx.get_tool('OcxSchema')
+    schema_reader = glob_ctx.get_tool("OcxSchema")
     if schema_reader.is_parsed():
         summary = schema_reader.tbl_summary()
-        table = [['Item', 'Value']]
+        table = [["Item", "Value"]]
         for item in summary.schema_version:
             table.append(item)
         for item in summary.schema_types:
@@ -138,7 +138,7 @@ def summary(ctx):
 def parse(ctx, xsd):
     """Parse the schema XSD file"""
     glob_ctx = ctx.obj
-    schema_reader = glob_ctx.get_tool('OcxSchema')
+    schema_reader = glob_ctx.get_tool("OcxSchema")
     if schema_reader.process_schema(xsd):
         secho(f"The schema {xsd} has been successfully parsed", fg=INFO_COLOR)
     else:
@@ -150,7 +150,7 @@ def parse(ctx, xsd):
 def attribute_groups(ctx):
     """Output all elements of type `xs:attributeGroup`"""
     glob_ctx = ctx.obj
-    schema_reader = ctx.obj.get_tool('OcxSchema')
+    schema_reader = ctx.obj.get_tool("OcxSchema")
     if schema_reader.is_parsed():
         result = schema_reader.tbl_attribute_groups()
         print_table(result, glob_ctx)
@@ -163,7 +163,7 @@ def attribute_groups(ctx):
 def simple_types(ctx):
     """Output all the schema elements of type `xs:simpleType`."""
     glob_ctx = ctx.obj
-    schema_reader = glob_ctx.get_tool('OcxSchema')
+    schema_reader = glob_ctx.get_tool("OcxSchema")
     if schema_reader.is_parsed():
         result = schema_reader.tbl_simple_types()
         print_table(result, glob_ctx)
@@ -176,7 +176,7 @@ def simple_types(ctx):
 def attributes(ctx):
     """Output all schema elements of type `xs:attribute`."""
     glob_ctx = ctx.obj
-    schema_reader = glob_ctx.get_tool('OcxSchema')
+    schema_reader = glob_ctx.get_tool("OcxSchema")
     if schema_reader.is_parsed():
         result = schema_reader.tbl_attribute_types()
         print_table(result, glob_ctx)
@@ -189,7 +189,7 @@ def attributes(ctx):
 def complex(ctx):
     """Output all schema elements of type `xs:complexType`."""
     glob_ctx = ctx.obj
-    schema_reader = glob_ctx.get_tool('OcxSchema')
+    schema_reader = glob_ctx.get_tool("OcxSchema")
     if schema_reader.is_parsed():
         result = schema_reader.tbl_complex_types()
         print_table(result, glob_ctx)
@@ -202,7 +202,7 @@ def complex(ctx):
 def element_types(ctx):
     """Output all schema elements of type `xs:element`."""
     glob_ctx = ctx.obj
-    schema_reader = glob_ctx.get_tool('OcxSchema')
+    schema_reader = glob_ctx.get_tool("OcxSchema")
     if schema_reader.is_parsed():
         result = schema_reader.tbl_element_types()
         print_table(result, glob_ctx)
@@ -216,7 +216,7 @@ def namespace(ctx):
     """Output all schema namespaces with its associated prefix."""
     glob_ctx = ctx.obj
     fmt = glob_ctx.get_table_format()
-    schema_reader = glob_ctx.get_tool('OcxSchema')
+    schema_reader = glob_ctx.get_tool("OcxSchema")
     if schema_reader.is_parsed():
         result = schema_reader.get_namespaces()
         table = defaultdict(list)
@@ -239,7 +239,7 @@ def inspect(ctx, element):
     """
     glob_ctx = ctx.obj
     fmt = glob_ctx.get_table_format()
-    schema_reader = glob_ctx.get_tool('OcxSchema')
+    schema_reader = glob_ctx.get_tool("OcxSchema")
     if schema_reader.is_parsed():
         e = schema_reader.get_ocx_element_from_type(element)
         if e is not None:
@@ -270,8 +270,8 @@ def inspect(ctx, element):
                 f"{element.get_prefix()}:{element.get_name()}" for element in schema_reader.get_ocx_elements()
             ]
             closest = max([(fuzz.token_set_ratio(element, j), j) for j in global_elements])
-            ans = prompt(f"Did you mean {closest[1]}? (Yes/No)", default='Yes')
-            if ans.lower() == "yes" or ans.lower() == 'y':
+            ans = prompt(f"Did you mean {closest[1]}? (Yes/No)", default="Yes")
+            if ans.lower() == "yes" or ans.lower() == "y":
                 ctx.invoke(inspect, closest[1])
     else:
         secho("No schema has been parsed. Parse a schema first", fg=INFO_COLOR)
@@ -286,7 +286,7 @@ def elements(ctx):
     sep = glob_ctx.get_column_separator()
     out = glob_ctx.get_table_output()
     index_rows = glob_ctx.get_row_numbers()
-    schema_reader = glob_ctx.get_tool('OcxSchema')
+    schema_reader = glob_ctx.get_tool("OcxSchema")
     if schema_reader.is_parsed():
         table = defaultdict(list)
         ocx_elements = schema_reader.get_ocx_elements()

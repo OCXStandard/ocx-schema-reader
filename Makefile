@@ -1,34 +1,47 @@
 # A self-documenting Makefile
 # You can set these variables from the command line, and also
 # from the environment for the first two.
-# SHELL = /bin/bash
-UNAME := $(shell uname)
-host-type := $(shell arch)
-MACOS_ENV = .macosenv
-WIN_ENV = .win_env
+SHELL = /bin/sh
+#UNAME := $(shell uname)
+#host-type := $(shell arch)
+#MACOS_ENV = .macosenv
+#WIN_ENV = .win_env
 PACKAGE := ocx_schema_reader
 MODULES := $(wildcard $(PACKAGE)/*.py)
 COMMIT_HASH = `git rev-parse --short HEAD 2>/dev/null`
-BUILD_DATE = `date +%D.%T`
-# Determine which VENV to use
-ifeq ($(OS),Windows_NT)
-	VENV = ${WIN_ENV}
-else
-    VENV = ${MACOS_ENV}
-endif
+SPHINXBUILD = python -m sphinx
+SPHINXOPTS = "html"
+SOURCEDIR = "./docs/source"
+BUILDDIR =  "./docs/build/"
+#BUILD_DATE = `date +%D.%T`
+## Determine which VENV to use
+#ifeq ($(OS),Windows_NT)
+#	VENV = ${WIN_ENV}
+#else
+#    VENV = ${MACOS_ENV}
+#endif
 
-# PROJECT setup using conda and /bin/bash
-.PHONY: conda
-conda:  ## Activate conda for SHELL
-# ~/.conda.bash_env is a one-liner: eval "$(/path/to/bin/conda shell.bash hook)"
-	export BASH_ENV=${HOME}\.conda.bash_env
+# PROJECT setup using conda and powershell
+.PHONY: conda-dev
+conda-dev:  ## Create a conda development environment from environment.yaml and install all packages
+	@conda env create -f environment.yaml
+	# ~/.conda.bash_env is a one-liner: eval "$(/path/to/bin/conda shell.bash hook)"
+	#export BASH_ENV=${HOME}\.conda.bash_env
 
+.PHONY: conda-upd
+conda-upd:  environment.yaml ## Update the conda development environment when environment.yaml has changed
+	@conda env update -f environment.yaml
+
+conda-lock:  environment.lock.yaml ## Update the conda development environment when environment.yaml has changed
+	@conda env export > environment.lock.yaml
+	# ~/.conda.bash_env is a one-liner: eval "$(/path/to/bin/conda shell.bash hook)"
+	#export BASH_ENV=${HOME}\.conda.bash_env
 
 
 # PROJECT DEPENDENCIES ########################################################
 
-VIRTUAL_ENV ?= ${VENV}
-DEPENDENCIES := $(VIRTUAL_ENV)/$(shell cksum pyproject.toml)
+# VIRTUAL_ENV ?= ${VENV}
+# DEPENDENCIES := $(VIRTUAL_ENV)/$(shell cksum pyproject.toml)
 
 
 # Color output
@@ -37,15 +50,10 @@ NC='\033[0m' # No Color
 
 
 var:  ## List Makefile variables
-	@printf "\033[0;34mOperating system: $(UNAME)\033[0m\n"
-	@printf "\033[0;34mPackage: ${PACKAGE}\033[0m \n"
-	@printf "\033[0;34mModules: ${MODULES}\033[0m \n"
-	@printf "\033[0;34mCommit HASH: ${COMMIT_HASH}\033[0m \n"
-	@printf "\033[0;34mBuild date: ${BUILD_DATE}\033[0m \n"
-	@printf "\033[0;34mVirtual environment: ${VENV}\033[0m \n"
-	@printf "\033[0;34mDPENDENCIES: ${DEPENDENCIES}\033[0m \n"
-	@printf "\033[0;34mHost: ${host-type}\033[0m \n"
-	@printf "\033[0;34mHOME: $(HOME)\033[0m \n"
+	@printf "${BLUE}${SPHINXBUILD}"
+	@printf "${BLUE}${BUILDDIR}"
+	@printf "${BLUE}${SOURCEDIR}"
+	@printf "${BLUE}${SPHINXOPTS}"
 
 
 
@@ -78,8 +86,8 @@ export:  poetry.lock ## Export dependencies to requirements.txt
 	@poetry export -o requirements.txt
 
 r.PHONY: run
-run: install ## Start the program
-	ocx-schema-reader
+run: ## Start the ocx-schema-reader CLI
+	python main.py
 
 .PHONY: shell
 shell: install ## Launch an IPython session
@@ -95,11 +103,11 @@ test:  ## Run unit and integration tests
 
 # CHECKS ######################################################################
 lint:	## Run formatters, linters, and static analysis
-	@printf "\033[36m%s\033[0m\n"  "Running black against source and test files..."
+	@printf "\n${BLUE}Running black against source and test files...${NC}\n"
 	@black . -v
-	@printf "\n\033[0;34mRunning Flake8 against source and test files...\033[0m\n"
+	@printf "${BLUE}\nRunning Flake8 against source and test files...${NC}\n"
 	@flake8 -v
-	@printf "\n\033[0;34mRunning Bandit against source files...\033[0m\n"
+	@printf "${BLUE}\nRunning Bandit against source files...${NC}\n"
 	@bandit -r -c pyproject.toml .
 
 
@@ -117,8 +125,7 @@ sphinx-help:  ## Sphinx options
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 sphinx: ## Build the html docs using Sphinx. For other Sphinx options, run make in the docs folder
-	@$(SPHINXBUILD) -M "clean" "$(SOURCEDIR)" "$(BUILDDIR)"
-	@$(SPHINXBUILD) -M "$(SPHINXOPTS)" "$(SOURCEDIR)" "$(BUILDDIR)"
+	@$(SPHINXBUILD) "$(SOURCEDIR)" "$(BUILDDIR)" -b "$(SPHINXOPTS)"
 
 
 # BUILD #######################################################################

@@ -11,7 +11,20 @@ functionality to output schema change history and inspect schema element data.
 The package will make the schema content more accessible and is a building block for providing other OCX schema tools
 like a schema validator and automated schema documentation.
 
-## Install
+## Installation
+
+We use the [Conda](https://conda.io/projects/conda/en/latest/index.html) package manager for building the python
+packages and distributing it. The motivation for this is to
+ensure cross-platform portability and benefit
+from [improved vulnerability scanning in Conda](https://pythonspeed.com/articles/conda-security-scans/).
+
+Install the package using Conda (a prerequisite is
+an [Anaconda or miniconda installation](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) on your
+system):
+
+```
+conda install -c conda-forge ocx_schema_reader
+```
 
 ## Usage
 
@@ -75,12 +88,16 @@ $ poetry shell
 $ poetry install
 $ poetry run
 ```
+
 ## Dependency management
 
-This project uses [pip-compile-multi](https://pypi.org/project/pip-compile-multi/) for hard-pinning dependencies versions.
+This project uses [pip-compile-multi](https://pypi.org/project/pip-compile-multi/) for hard-pinning dependencies
+versions.
 Please see its documentation for usage instructions.
-In short, `requirements/base.in` contains the list of direct requirements with occasional version constraints (like `Django<2`)
-and `requirements/base.txt` is automatically generated from it by adding recursive tree of dependencies with fixed versions.
+In short, `requirements/base.in` contains the list of direct requirements with occasional version constraints (
+like `Django<2`)
+and `requirements/base.txt` is automatically generated from it by adding recursive tree of dependencies with fixed
+versions.
 The same goes for `test` and `dev`.
 
 To upgrade dependency versions, run `pip-compile-multi`.
@@ -89,7 +106,8 @@ To add a new dependency without upgrade, add it to `requirements/base.in` and ru
 
 For installation always use `.txt` files. For example, command `pip install -Ue . -r requirements/dev.txt` will install
 this project in development mode, testing requirements and development tools.
-Another useful command is `pip-sync requirements/dev.txt`, it uninstalls packages from your virtualenv that aren't listed in the file.
+Another useful command is `pip-sync requirements/dev.txt`, it uninstalls packages from your virtualenv that aren't
+listed in the file.
 
 ## API Reference
 

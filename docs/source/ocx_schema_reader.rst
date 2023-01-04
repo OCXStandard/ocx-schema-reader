@@ -72,3 +72,19 @@ The  ''SchemaChange'' class
    :members:
    :undoc-members:
    :show-inheritance:
+
+The ''LxmlParser'' class
+************************
+
+.. autoclass:: ocx_schema_reader.xml_parser.LxmlParser
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+The ''LxmlElement'' class
+*************************
+
+.. autoclass:: ocx_schema_reader.xml_element.LxmlElement
+   :members:
+   :undoc-members:
+   :show-inheritance:

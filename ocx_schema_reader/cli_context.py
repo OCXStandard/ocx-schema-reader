@@ -5,107 +5,107 @@ from logging import Logger
 
 
 class GlobalContext:
-    """ Class holding global context information to be shared between subcommands
+    """Class holding global context information to be shared between subcommands
 
-        Attributes:
-            _tools: Pointers to toolset that can be shared
-            _table_format: The formatting used when outputting tables. Default=`outline`
-            _table_output: Output tables to a file or `stdout` (default)
+    Attributes:
+        _tools: Pointers to toolset that can be shared
+        _table_format: The formatting used when outputting tables. Default=`outline`
+        _table_output: Output tables to a file or `stdout` (default)
     """
 
     def __init__(self, logger: Logger):
         self._logger = logger
         self._tools: Dict[Any] = {}
-        self._table_format: str = 'simple'
-        self._table_output: str = 'stdout'
-        self._table_column_separator: str = 'U+0020'  # Whitespace
+        self._table_format: str = "simple"
+        self._table_output: str = "stdout"
+        self._table_column_separator: str = "U+0020"  # Whitespace
         self._row_numbers = True
 
     def register_tool(self, tool: Any):
-        """ Register a class instance with the global context"""
+        """Register a class instance with the global context"""
         self._tools[tool.__class__.__name__] = tool
-        self._logger.debug(f'Registered class: {tool.__class__.__name__}')
+        self._logger.debug(f"Registered class: {tool.__class__.__name__}")
 
     def get_tool(self, name: str) -> Any:
-        """ Return the tool with name `name`"""
+        """Return the tool with name `name`"""
         return self._tools.get(name)
 
     def get_logger(self) -> Logger:
-        """ Return the python `Logger` object"""
+        """Return the python `Logger` object"""
         return self._logger
 
-    def table_format(self, fmt: str = 'simple'):
-        """ Set the table formatter option
-            Args:
-                fmt: set output table format; supported formats:
-                          plain, simple, github, grid, fancy_grid, pipe,
-                          orgtbl, rst, mediawiki, html, latex, latex_raw,
-                          latex_booktabs, latex_longtable, tsv
-                          (default: simple)
+    def table_format(self, fmt: str = "simple"):
+        """Set the table formatter option
+        Args:
+            fmt: set output table format; supported formats:
+                      plain, simple, github, grid, fancy_grid, pipe,
+                      orgtbl, rst, mediawiki, html, latex, latex_raw,
+                      latex_booktabs, latex_longtable, tsv
+                      (default: simple)
         """
         self._table_format = fmt
 
-    def table_output(self, file: str = 'stdout'):
-        """ Print tables to a file.
+    def table_output(self, file: str = "stdout"):
+        """Print tables to a file.
 
-            Args:
-                file: The file name for table output. Subsequent table output will be amended to the end of the file.
-                        Default = `stdout`
+        Args:
+            file: The file name for table output. Subsequent table output will be amended to the end of the file.
+                    Default = `stdout`
 
         """
         self._table_output = file
 
-    def table_column_separator(self, sep: str = 'U+0020'):
-        """ Set the table column character separator.
+    def table_column_separator(self, sep: str = "U+0020"):
+        """Set the table column character separator.
 
-            Args:
-                sep: The column separator character  for tables. Default = whitespace
+        Args:
+            sep: The column separator character  for tables. Default = whitespace
 
         """
         self._table_column_separator = sep
 
     def get_column_separator(self) -> str:
-        """ Get the table column character separator.
+        """Get the table column character separator.
 
-            Returns:
-                sep: The table column separator character for tables
+        Returns:
+            sep: The table column separator character for tables
 
         """
         return self._table_column_separator
 
     def get_table_output(self) -> str:
-        """ Get the table output destination.
+        """Get the table output destination.
 
-            Returns:
-                file: The file name for table output. Subsequent table output will be amended to the end of the file.
-                        Default = `stdout`
+        Returns:
+            file: The file name for table output. Subsequent table output will be amended to the end of the file.
+                    Default = `stdout`
 
         """
         return self._table_output
 
     def get_table_format(self) -> str:
-        """ Get the table formatter option
+        """Get the table formatter option
 
-            Returns:
-                fmt: The output table format
+        Returns:
+            fmt: The output table format
 
         """
         return self._table_format
 
     def table_row_numbers(self, row_number: bool = True):
-        """ Index all table rows.
+        """Index all table rows.
 
-            Args:
-                row_number: True if table rows are indexed, False otherwise. Default = True
+        Args:
+            row_number: True if table rows are indexed, False otherwise. Default = True
 
         """
         self._row_numbers = row_number
 
     def get_row_numbers(self) -> bool:
-        """ The table row index flag.
+        """The table row index flag.
 
-            Returns:
-                sep: Row index flag
+        Returns:
+            sep: Row index flag
 
         """
         return self._row_numbers

@@ -164,7 +164,7 @@ class OcxSchema:
 
         if "http" not in schema_url:
             if not Path(schema_url).exists():
-                self.log.error(f'The xsd file {schema_url} does not exist')
+                self.log.error(f"The xsd file {schema_url} does not exist")
                 return False
         else:
             try:
@@ -615,7 +615,7 @@ class OcxSchema:
             The schema summary
         """
 
-        schema_version = [('Schema Version', self.get_schema_version())]
+        schema_version = [("Schema Version", self.get_schema_version())]
         schema_types = [(schema_type, len(self._all_types[schema_type])) for schema_type in self._all_types]
         namespaces = [(ns, self._namespace[ns]) for ns in self._namespace]
         return SchemaSummary(schema_version, schema_types, namespaces)

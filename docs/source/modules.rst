@@ -5,5 +5,4 @@ ocx-schema-reader modules
    :maxdepth: 4
 
    ocx_schema_reader
-   ocx_xml
    schema_cli

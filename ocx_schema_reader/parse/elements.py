@@ -1,4 +1,4 @@
-#  Copyright (c) 2022 OCX Consortium (https://3docx.org). See the LICENSE.
+#  Copyright (c) 2022-2023.  OCX Consortium https://3docx.org. See the LICENSE
 
 from collections import defaultdict
 from logging import Logger
@@ -6,8 +6,8 @@ from typing import Dict, List, Union
 
 from lxml.etree import Element, QName
 
-from ocx_schema_reader.schema_helpers import SchemaHelper
-from ocx_schema_reader.xml_element import LxmlElement
+from ocx_schema_reader.parse.helpers import SchemaHelper
+from ocx_schema_reader.schema_xml.element import LxmlElement
 
 
 class OcxAttribute:

@@ -1,0 +1,24 @@
+package:
+  name: ocx-schema-reader
+  version: 0.1.0
+
+source:
+  path: ./ocx_schema_reader
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+
+
+about:
+  home: https://github.com/OCXStandard/ocx-schema-reader/
+  license: MIT
+  license_family: MIT
+  summary: A command line interface for reading and parsing the OCX schema

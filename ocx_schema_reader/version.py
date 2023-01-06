@@ -1,5 +1,8 @@
 #  Copyright (c) 2023.  OCX Consortium https://3docx.org. See the LICENSE
 
+from pathlib import Path
+from ocx_schema_reader.utils import ROOT_DIR, load_yaml_config
+
 """Expose package-wide elements."""
 
 __version__ = "0.1.0.dev1"
@@ -13,3 +16,11 @@ __version__ = "0.1.0.dev1"
     __version__ = '1.2.3'        # Final Release
     __version__ = '1.2.3.post1'  # Post Release 1
 """
+MODULE_CONFIG = Path(ROOT_DIR) / "config.yaml"
+config = load_yaml_config(MODULE_CONFIG)
+
+INFO_COLOR = config.get("INFO_COLOR")
+ERROR_COLOR = config.get("ERROR_COLOR")
+APP = config.get("APP")
+DEFAULT_SCHEMA = config.get("DEFAULT_SCHEMA")
+SCHEMA_FOLDER = config.get("SCHEMA_FOLDER")

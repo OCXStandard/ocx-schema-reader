@@ -10,7 +10,15 @@ from typing import Dict, List
 
 import yaml
 
-ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), ".."))
+
+def root_dir() -> str:
+    """Path to the directory of the parent module"""
+    return os.path.realpath(os.path.join(os.path.dirname(__file__), "../"))
+
+
+def current_dir(file: str) -> str:
+    """Path to file"""
+    return os.path.realpath(os.path.join(os.path.dirname(file), ""))
 
 
 def nested_dict():

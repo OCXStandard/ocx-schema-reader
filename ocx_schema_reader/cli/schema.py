@@ -1,43 +1,40 @@
-#  Copyright (c) 3-2022. OCX Consortium https://3docx.org. See the LICENSE
+#  Copyright (c) 3-2023.  OCX Consortium https://3docx.org. See the LICENSE
 
 from collections import defaultdict
 
-import numpy as np
 from click_shell import shell
 from click import Choice, prompt
 from click import Path as ClickPath
 from click import argument, option, pass_context, secho
 from fuzzywuzzy import fuzz
 from tabulate import tabulate
+from ocx_schema_reader.schema_xml.element import LxmlElement
+from ocx_schema_reader.parse.reader import OcxSchema
+from .cli_context import GlobalContext
 
-from ocx_schema_reader.schema_elements import LxmlElement
-from ocx_schema_reader.schema_reader import OcxSchema
-from ocx_schema_reader.cli_context import GlobalContext
+import ocx_schema_reader.utils as utils
+from .config import INFO_COLOR, ERROR_COLOR, APP
+from ocx_schema_reader.parse.config import DEFAULT_SCHEMA, SCHEMA_FOLDER
 
-from ocx_schema_reader.utils import dict_to_list, number_table_rows
-from ocx_schema_reader import INFO_COLOR, ERROR_COLOR, APP, DEFAULT_SCHEMA, SCHEMA_FOLDER
+PROMPT = "SCHEMA"
 
 
 def print_table(table: list, glob_ctx: GlobalContext, to_list: bool = True):
     fmt = glob_ctx.get_table_format()
-    sep = glob_ctx.get_column_separator()
-    out = glob_ctx.get_table_output()
+    # sep = glob_ctx.get_column_separator()
+    # out = glob_ctx.get_table_output()
     index_rows = glob_ctx.get_row_numbers()
     if to_list:
-        result = dict_to_list(table, index_rows)
+        result = utils.dict_to_list(table, index_rows)
         secho(tabulate(result, headers="firstrow", tablefmt=fmt), fg=INFO_COLOR)
     else:
         secho(tabulate(table, headers="firstrow", tablefmt=fmt, showindex=index_rows), fg=INFO_COLOR)
 
 
-@shell(prompt=f"{APP} > ", intro=f"Starting {APP}..")
+@shell(prompt=f"{PROMPT} > ", intro=f"Starting {PROMPT}..")
 @pass_context
 def schema(ctx):
     """The schema subcommands"""
-    g_ctx = ctx.obj
-    logger = g_ctx.get_logger()
-    schema_reader = OcxSchema(logger, SCHEMA_FOLDER)
-    g_ctx.register_tool(schema_reader)
     pass
 
 
@@ -283,8 +280,8 @@ def elements(ctx):
     """Output all the global schema elements."""
     glob_ctx = ctx.obj
     fmt = glob_ctx.get_table_format()
-    sep = glob_ctx.get_column_separator()
-    out = glob_ctx.get_table_output()
+    # sep = glob_ctx.get_column_separator()
+    # out = glob_ctx.get_table_output()
     index_rows = glob_ctx.get_row_numbers()
     schema_reader = glob_ctx.get_tool("OcxSchema")
     if schema_reader.is_parsed():

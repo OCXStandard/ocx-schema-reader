@@ -1,4 +1,4 @@
-#  Copyright (c) 2022 OCX Consortium (https://3docx.org). See the LICENSE.
+#  Copyright (c) 2022-2023.  OCX Consortium https://3docx.org. See the LICENSE
 
 import re
 from dataclasses import asdict
@@ -6,8 +6,8 @@ from typing import Dict, List, Union
 
 from lxml.etree import Element, ElementTextIterator
 
-from ocx_schema_reader.schema_data_classes import SchemaChange
-from ocx_schema_reader.xml_element import LxmlElement
+from ocx_schema_reader.parse.data_classes import SchemaChange
+from ocx_schema_reader.schema_xml.element import LxmlElement
 
 
 class SchemaHelper:

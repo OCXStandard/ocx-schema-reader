@@ -1,7 +1,8 @@
 # A self-documenting Makefile
 # You can set these variables from the command line, and also
 # from the environment for the first two.
-SHELL = /bin/sh
+SHELL = /bash/sh
+SOURCE = ./ocx_schema_reader/
 #UNAME := $(shell uname)
 #host-type := $(shell arch)
 #MACOS_ENV = .macosenv
@@ -13,6 +14,7 @@ SPHINXBUILD = python -m sphinx
 SPHINXOPTS = "html"
 SOURCEDIR = "./docs/source"
 BUILDDIR =  "./docs/build/"
+COVDIR = "htmlcov"
 #BUILD_DATE = `date +%D.%T`
 ## Determine which VENV to use
 #ifeq ($(OS),Windows_NT)
@@ -64,43 +66,26 @@ all: install
 
 
 .PHONY: install
-install: $(DEPENDENCIES) .cache
 
-$(DEPENDENCIES):
-	#@ rm -rf $(VIRTUAL_ENV)/.poetry-*
-	poetry config virtualenvs.in-project false
-	poetry install
-	@ touch $@
-
-# ifndef CI
-poetry.lock: pyproject.toml
-	poetry lock
-	@ touch $@
-# endif
-
-.cache:
-	@ mkdir -p .cache
-
-export:  poetry.lock ## Export dependencies to requirements.txt
-# RUN ######################################################################
-	@poetry export -o requirements.txt
-
-r.PHONY: run
+PHONY: run
 run: ## Start the ocx-schema-reader CLI
 	python main.py
 
-.PHONY: shell
-shell: install ## Launch an IPython session
-	poetry run ipython --ipython-dir=notebooks
-
 # TESTS #######################################################################
 
-RANDOM_SEED ?= $(shell date +%s)
-FAILURES := .cache/pytest/v/cache/lastfailed
+FAILURES := .pytest_cache/pytest/v/cache/lastfailed
 
 test:  ## Run unit and integration tests
 	@pytest --durations=5 -v --cov-report html --cov ocx_schema_reader tests\
 
+test-upd:  ## Update the regression tests baseline
+	@pytest --force-regen
+
+
+test-cov:  ## Show the test coverage report
+	cmd /c start $(CURDIR)/$(COVDIR)/index.html
+
+PHONY: test-upd, test-cov
 # CHECKS ######################################################################
 lint:	## Run formatters, linters, and static analysis
 	@printf "\n${BLUE}Running black against source and test files...${NC}\n"
@@ -108,19 +93,13 @@ lint:	## Run formatters, linters, and static analysis
 	@printf "${BLUE}\nRunning Flake8 against source and test files...${NC}\n"
 	@flake8 -v
 	@printf "${BLUE}\nRunning Bandit against source files...${NC}\n"
-	@bandit -r -c pyproject.toml .
+	bandit -r -c pyproject.toml .
 
 
 # DOCUMENTATION ###############################################################
 html-serve: ## Open the the html docs built by Sphinx
 	@cmd /c start $(CURDIR)/$(BUILDDIR)/html/$(MODULE).html
 
-
-# default target, when make executed without arguments
-all: build test install export  ## Do a complete build, test and install.  Update requirements.txt
-
-bump-dev:  ## Bump the version the next version. All version strings will be updated
-	@bump2version --config-file .bumpversion.cfg -n  part dev --new-version  $($1)
 sphinx-help:  ## Sphinx options
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
@@ -133,23 +112,13 @@ sphinx: ## Build the html docs using Sphinx. For other Sphinx options, run make 
 DIST_FILES := dist/*.tar.gz dist/*.whl
 EXE_FILES := dist/$(PACKAGE).*
 
-.PHONY: build ## Build the package
-	@poetry build
+build: environment.yaml
+	conda-build
 
-.PHONY: dist
-dist: install $(DIST_FILES)
-$(DIST_FILES): $(MODULES) pyproject.toml
-	rm -f $(DIST_FILES)
-	poetry build
 
-.PHONY: exe
-exe: install $(EXE_FILES)
-$(EXE_FILES): $(MODULES) $(PACKAGE).spec
-	# For framework/shared support: https://github.com/yyuu/pyenv/wiki
-	poetry run pyinstaller $(PACKAGE).spec --noconfirm --clean
+bump-dev:  ## Bump the version the next version. All version strings will be updated
+	@bump2version --config-file .bumpversion.cfg -n  part dev --new-version  $($1)
 
-$(PACKAGE).spec:
-	poetry run pyi-makespec $(PACKAGE)/__main__.py --onefile --windowed --name=$(PACKAGE)
 
 # RELEASE #####################################################################
 
@@ -159,18 +128,10 @@ upload: dist ## Upload the current version to PyPI
 	poetry publish
 	bin/open https://pypi.org/project/$(PACKAGE)
 
-# RELEASE #####################################################################
-
-.PHONY: testpypi
-testpypi: dist ## Upload the current version to TestPyPI
-	#git diff --name-only --exit-code
-	poetry publish -r test-pypi
-	# bin/open https://pypi.org/project/$(PACKAGE)
-
 # CLEANUP #####################################################################
 
 .PHONY: clean
-clean: .clean-build .clean-docs .clean-test .clean-install ## Delete all generated and temporary files
+clean:  .clean-test  ## Delete all generated and temporary files
 
 .PHONY: clean-all
 clean-all: clean
@@ -183,7 +144,7 @@ clean-all: clean
 
 .PHONY: .clean-test
 .clean-test:
-	rm -rf .cache .pytest .coverage htmlcov
+	$(shell rm -rf .pytest_cache  htmlcov)
 
 .PHONY: .clean-docs
 .clean-docs:

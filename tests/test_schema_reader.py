@@ -1,4 +1,4 @@
-from ocx_schema_reader.schema_reader import OcxSchema
+from ocx_schema_reader.parse.reader import OcxSchema
 
 
 class TestOcxSchema:
@@ -8,7 +8,7 @@ class TestOcxSchema:
 
     def test_summary_table(self, data_regression, process_schema: OcxSchema):
         summary = process_schema.tbl_summary()
-        data_regression.check(summary)
+        data_regression.check(summary.__dict__)
 
     def test_tbl_attribute_groups(self, data_regression, process_schema: OcxSchema):
         result = process_schema.tbl_attribute_groups()

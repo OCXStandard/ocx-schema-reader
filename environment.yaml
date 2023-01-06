@@ -23,6 +23,7 @@ dependencies:
   - isort
   - autoflake
   - flake8
+  - bandit
   - pytest
   - pytest-cov
   - coverage

@@ -1,4 +1,4 @@
-#  Copyright (c) 3-2022. OCX Consortium https://3docx.org. See the LICENSE
+#  Copyright (c) 3-2023.  OCX Consortium https://3docx.org. See the LICENSE
 
 from collections import defaultdict
 from logging import Logger
@@ -9,26 +9,15 @@ import requests
 from lxml.etree import Element, QName
 from requests import HTTPError
 
-from ocx_schema_reader.schema_data_classes import SchemaSummary, SchemaType
-from ocx_schema_reader.schema_elements import (
+from .config import DEFAULT_SCHEMA, SCHEMA_FOLDER, W3C_SCHEMA_BUILT_IN_TYPES, PROCESS_SCHEMA_TYPES
+from .data_classes import SchemaSummary, SchemaType
+from .elements import (
     OcxAttribute,
     OcxChildElement,
     OcxGlobalElement,
 )
-from ocx_schema_reader.schema_helpers import SchemaHelper
-from ocx_schema_reader.utils import ROOT_DIR, load_yaml_config
-from ocx_schema_reader.xml_parser import LxmlElement, LxmlParser
-
-config = Path(ROOT_DIR) / "ocx_schema_reader" / "config.yaml"
-MODULE_CONFIG = config.absolute()
-
-app_config = load_yaml_config(MODULE_CONFIG)
-
-DEFAULT_SCHEMA = app_config.get("DEFAULT_SCHEMA")
-SCHEMA_FOLDER = app_config.get("SCHEMA_FOLDER")
-W3C_SCHEMA_BUILT_IN_TYPES = app_config.get("W3C_SCHEMA_BUILT_IN_TYPES")
-PROCESS_SCHEMA_TYPES = app_config.get("PROCESS_SCHEMA_TYPES")
-APP = app_config.get("APP")
+from .helpers import SchemaHelper
+from ocx_schema_reader.schema_xml.parse import LxmlElement, LxmlParser
 
 
 class OcxSchema:
@@ -178,7 +167,7 @@ class OcxSchema:
                 )
                 schema_url = file
             except HTTPError as e:
-                self.log.error(f'Failed to access schema from "{schema_url}""')
+                self.log.error(f'Failed to access schema from "{schema_url}: {e}""')
                 return False
         try:
             self._is_parsed = self._parser.parse(schema_url)

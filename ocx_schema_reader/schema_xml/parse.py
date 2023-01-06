@@ -1,16 +1,12 @@
-#  Copyright (c) 2022. OCX Consortium (https://3docx.org) See the LICENSE
+#  Copyright (c) 2023.  OCX Consortium https://3docx.org. See the LICENSE
 
-#  Copyright (c) 3Docx.org. See the LICENSE.
 from logging import Logger
 from typing import Dict
 
 from lxml import etree
 from lxml.etree import Element, XMLSyntaxError
 
-from ocx_schema_reader.xml_element import LxmlElement
-
-CONFIG_YAML = "/config.yaml"
-LOG_CONFIG_YAML = "/log_config.yaml"
+from .element import LxmlElement
 
 
 class LxmlParser:

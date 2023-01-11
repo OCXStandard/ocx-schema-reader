@@ -124,8 +124,8 @@ doc: ## Build the html docs using Sphinx. For other Sphinx options, run make in 
 DIST_FILES := dist/*.tar.gz dist/*.whl
 EXE_FILES := dist/$(PACKAGE).*
 
-build: dist/main.exe
-	pyinstaller
+build: dist/main.exe  ## Build a bundled package using pyinstaller
+	pyinstaller main.spec
 
 
 bump-dev:  ## Bump the version the next version. All version strings will be updated

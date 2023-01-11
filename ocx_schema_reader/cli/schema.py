@@ -14,7 +14,7 @@ from .cli_context import GlobalContext
 
 import ocx_schema_reader.utils as utils
 from ocx_schema_reader.cli import INFO_COLOR, ERROR_COLOR
-from ocx_schema_reader.schema import DEFAULT_SCHEMA, APP
+from ocx_schema_reader.schema import DEFAULT_SCHEMA, SUB_COMMAND
 
 
 def print_table(table: list, glob_ctx: GlobalContext, to_list: bool = True):
@@ -32,20 +32,31 @@ def print_table(table: list, glob_ctx: GlobalContext, to_list: bool = True):
         )
 
 
-@shell(prompt=f"{APP} > ", intro=f"Starting {APP}..")
+@shell(prompt=f"{SUB_COMMAND} > ", intro=f"Starting {SUB_COMMAND}..")
 @pass_context
 def schema(ctx):
     """The schema subcommands"""
     pass
 
 
-@schema.command(short_help="Invoke a parent command from the list")
+@schema.command(short_help="Invoke a parent CLI command")
+@argument('command', nargs=1, required=True)
+@option('--opt', help="The command option")
 @pass_context
-def invoke(ctx):
-    parent = ctx.parent
-    cli = parent.command
-    parent_commands = cli.list_commands(parent)
-    click.prompt('Select command:', parent_commands)
+def invoke(ctx, command, opt):
+    """ Invoke a command from the parent CLI"""
+    glob_ctx = ctx.obj
+    parent = glob_ctx.get_main_command_context()  # Main CLI context
+    main_command = parent.command.commands.get(command)
+    if main_command is not None:
+        if opt is not None:
+            args = ()
+            kwargs = {opt[0], opt[1]}
+            parent.invoke(main_command, opt)
+        else:
+            parent.forward(main_command)
+    else:
+        secho(f'No command {command} in main CLI', color=INFO_COLOR)
 
 
 @schema.command(short_help="The OCX xsd file to be parsed.")

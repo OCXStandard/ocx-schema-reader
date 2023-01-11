@@ -76,6 +76,28 @@ ocx-schema-reader
 ├───tests
 ```
 
+## The modules
+
+### cli
+
+The ``cli`` module implements a shell utility console command line interface (CLI)
+using [click-shell](https://pypi.org/project/click-shell/)
+and [Click](https://click.palletsprojects.com/en/8.1.x/).
+
+The shell utility is an interactive CLI with sub-commands. The main CLI implements generic functionalities such as
+output formatting and setting the logging level while the sub-commands implements domain specific commands.
+
+### schema
+
+### schema_xml
+
+### utils
+
+## Motivation
+
+The package will make the schema content more accessible and is a building block for providing other OCX schema tools
+like a schema validator and automated schema documentation.
+
 ## Installation
 
 *Prerequisite*: poetry must be installed in your python environment.

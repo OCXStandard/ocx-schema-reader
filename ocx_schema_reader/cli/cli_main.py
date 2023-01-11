@@ -1,6 +1,5 @@
 #  Copyright (c) 2023.  OCX Consortium https://3docx.org. See the LICENSE
 from __future__ import annotations
-from pathlib import Path
 from click_shell import shell
 from click import pass_context, clear, option, secho, Choice
 from tabulate import tabulate
@@ -8,12 +7,29 @@ import yaml
 import logging
 from logging import config
 import colorlog
-
+import ocx_schema_reader
 from .schema import schema
 from ocx_schema_reader.schema.parser import OcxSchema
 from .cli_context import GlobalContext
 from ocx_schema_reader.cli import INFO_COLOR, ERROR_COLOR, APP, LOG_FILE, log_config
 from ocx_schema_reader.schema import SCHEMA_FOLDER
+
+SPLASH_SCREEN = """                                         
+    ,----..                              
+   /   /   \    ,----..   ,--,     ,--,  
+  /   .     :  /   /   \  |'. \   / .`|  
+ .   /   ;.  \|   :     : ; \ `\ /' / ;  
+.   ;   /  ` ;.   |  ;. / `. \  /  / .'  
+;   |  ; \ ; |.   ; /--`   \  \/  / ./   
+|   :  | ; | ';   | ;       \  \.'  /    
+.   |  ' ' ' :|   : |        \  ;  ;     
+'   ;  \; /  |.   | '___    / \  \  \    
+ \   \  ',  / '   ; : .'|  ;  /\  \  \   
+  ;   :    /  '   | '/  :./__;  \  ;  \  
+   \   \ .'   |   :    / |   : / \  \  ; 
+    `---`      \   \ .'  ;   |/   \  ' | 
+                `---`    `---'     `--`  
+                                         """
 
 # Set the logging configuration
 config.dictConfig(log_config)
@@ -33,15 +49,22 @@ def cli(ctx):
     """
     Main CLI
     """
+    secho(SPLASH_SCREEN)
+    secho(f'Version: {ocx_schema_reader.__version__}', color=INFO_COLOR)
+    secho(' Copyright (c) 2023. OCX Consortium https://3docx.org', color=INFO_COLOR)
     secho(
         f"Effective log level is: {logging.getLevelName(logger.getEffectiveLevel())}",
         color=INFO_COLOR,
     )
-    ctx.obj = GlobalContext(logger)
+    ctx.obj = GlobalContext(logger, ctx)
     # add tools to the context
     ctx.obj.register_tool(
         OcxSchema(logger, SCHEMA_FOLDER)
     )
+    # Register the cli commands with the app context object
+    glob_ctx = ctx.obj
+    for command in cli.list_commands(ctx):
+        glob_ctx.register_command(command)
 
 
 @cli.command(short_help="Clear the screen")

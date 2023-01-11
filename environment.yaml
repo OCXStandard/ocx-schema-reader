@@ -15,9 +15,10 @@ dependencies:
   - requests=2.28.1
 
   # Development deps
-  - Sphinx
+  - sphinx
   - sphinx-autodoc-typehints
   - sphinx_rtd_theme
+  - sphinx-click
   - pre-commit
   - black
   - isort
@@ -28,12 +29,12 @@ dependencies:
   - pytest-cov
   - coverage
   - pytest-regressions
-  - sphinx-click
   - jake  # Vulnerability scanner for Conda packages
   - bump2version
   - m2w64-make # GNU mMake for windows
-  - m2-grep # Grep for windows
-  - m2-gawk # awk for windows
+  - m2-grep # Grep for windows. For Makefile sh
+  - m2-gawk # awk for windows. for Makefile sh
+  - pyinstaller  # For making a bundled python installation (--onefile)
   - pip
   # Install any PyPi packages
   - pip:

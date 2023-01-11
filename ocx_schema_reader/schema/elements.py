@@ -6,7 +6,7 @@ from typing import Dict, List, Union
 
 from lxml.etree import Element, QName
 
-from ocx_schema_reader.parse.helpers import SchemaHelper
+from ocx_schema_reader.schema.helpers import SchemaHelper
 from ocx_schema_reader.schema_xml.element import LxmlElement
 
 

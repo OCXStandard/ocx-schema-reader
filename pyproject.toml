@@ -4,3 +4,9 @@
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = [
+    "B320", "B410"  # Skip xml vulnerability as we use lxml
+]
+

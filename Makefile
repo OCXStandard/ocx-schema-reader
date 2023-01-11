@@ -1,9 +1,10 @@
 # A self-documenting Makefile
 # You can set these variables from the command line, and also
 # from the environment for the first two.
-SHELL = /bash/sh
 SOURCE = ./ocx_schema_reader/
-#UNAME := $(shell uname)
+# PS replacements for sh
+RM = 'del -Confirmed False'
+
 #host-type := $(shell arch)
 #MACOS_ENV = .macosenv
 #WIN_ENV = .win_env
@@ -12,8 +13,8 @@ MODULES := $(wildcard $(PACKAGE)/*.py)
 COMMIT_HASH = `git rev-parse --short HEAD 2>/dev/null`
 SPHINXBUILD = python -m sphinx
 SPHINXOPTS = "html"
-SOURCEDIR = "./docs/source"
-BUILDDIR =  "./docs/build/"
+SOURCEDIR = "$(CURDIR)/docs/source"
+BUILDDIR =  "$(CURDIR)/docs/build/"
 COVDIR = "htmlcov"
 #BUILD_DATE = `date +%D.%T`
 ## Determine which VENV to use
@@ -56,6 +57,8 @@ var:  ## List Makefile variables
 	@printf "${BLUE}${BUILDDIR}"
 	@printf "${BLUE}${SOURCEDIR}"
 	@printf "${BLUE}${SPHINXOPTS}"
+	@printf "${BLUE}${UMNAME}"
+
 
 
 
@@ -76,7 +79,7 @@ run: ## Start the ocx-schema-reader CLI
 FAILURES := .pytest_cache/pytest/v/cache/lastfailed
 
 test:  ## Run unit and integration tests
-	@pytest --durations=5 -v --cov-report html --cov ocx_schema_reader tests\
+	@pytest --durations=5 -v --cov-report html --cov ocx_schema_reader .
 
 test-upd:  ## Update the regression tests baseline
 	@pytest --force-regen
@@ -87,24 +90,33 @@ test-cov:  ## Show the test coverage report
 
 PHONY: test-upd, test-cov
 # CHECKS ######################################################################
-lint:	## Run formatters, linters, and static analysis
+lint:	## Run formatters, linters, and static code security scanners bandit and jake
 	@printf "\n${BLUE}Running black against source and test files...${NC}\n"
 	@black . -v
 	@printf "${BLUE}\nRunning Flake8 against source and test files...${NC}\n"
 	@flake8 -v
 	@printf "${BLUE}\nRunning Bandit against source files...${NC}\n"
-	bandit -r -c pyproject.toml .
+	bandit -r -v -c pyproject.toml ocx_schema_reader
+	@printf "${BLUE}\nRunning Jake against installed dependencies...${NC}\n"
+	conda list | jake ddt | grep VULNERABLE
 
+PHONY: lint
 
-# DOCUMENTATION ###############################################################
+jake:   ## Detailed report from jake security scanner on all modules installed in the conda environment
+	@printf "${BLUE}\nRunning Jake against installed dependencies...${NC}\n"
+	conda list | jake ddt
+PHONY: jake
+
+# DOCUMENTATION ##############################################################
 html-serve: ## Open the the html docs built by Sphinx
-	@cmd /c start $(CURDIR)/$(BUILDDIR)/html/$(MODULE).html
+	@cmd /c start "$(BUILDDIR)$(SPHINXOPTS)/index.html"
 
 sphinx-help:  ## Sphinx options
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-sphinx: ## Build the html docs using Sphinx. For other Sphinx options, run make in the docs folder
-	@$(SPHINXBUILD) "$(SOURCEDIR)" "$(BUILDDIR)" -b "$(SPHINXOPTS)"
+doc: ## Build the html docs using Sphinx. For other Sphinx options, run make in the docs folder
+	@$(SPHINXBUILD) -M clean "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@$(SPHINXBUILD) -a "$(SOURCEDIR)" "$(BUILDDIR)/$(SPHINXOPTS)" -b "$(SPHINXOPTS)"
 
 
 # BUILD #######################################################################
@@ -112,8 +124,8 @@ sphinx: ## Build the html docs using Sphinx. For other Sphinx options, run make 
 DIST_FILES := dist/*.tar.gz dist/*.whl
 EXE_FILES := dist/$(PACKAGE).*
 
-build: environment.yaml
-	conda-build
+build: dist/main.exe
+	pyinstaller
 
 
 bump-dev:  ## Bump the version the next version. All version strings will be updated
@@ -144,7 +156,7 @@ clean-all: clean
 
 .PHONY: .clean-test
 .clean-test:
-	$(shell rm -rf .pytest_cache  htmlcov)
+	@$(RM) .\.pytest_cache\
 
 .PHONY: .clean-docs
 .clean-docs:

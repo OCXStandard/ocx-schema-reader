@@ -390,7 +390,9 @@ class LxmlElement:
         return element.iter(tag, *tags)
 
     @staticmethod
-    def find_all_children_with_name(element: Element, child_name: str, namespace: str = "*") -> List:
+    def find_all_children_with_name(
+        element: Element, child_name: str, namespace: str = "*"
+    ) -> List:
         """Find all the XML element's children with  name ``child_name``
         Args:
             element: The XML parent node to search from
@@ -406,7 +408,9 @@ class LxmlElement:
         return element.findall(xpath)
 
     @staticmethod
-    def find_child_with_name(element: Element, child_name: str, namespace: str = "*") -> Element:
+    def find_child_with_name(
+        element: Element, child_name: str, namespace: str = "*"
+    ) -> Element:
         """Find the first direct child of the XML element's children with  name ``child_name``
         Args:
             element: The XML parent node to search from
@@ -452,7 +456,9 @@ class LxmlElement:
         return element.findall(xpath)
 
     @staticmethod
-    def has_child_with_name(element: Element, child_name: str, namespace: str = "*") -> bool:
+    def has_child_with_name(
+        element: Element, child_name: str, namespace: str = "*"
+    ) -> bool:
         """Check if the element has a child with  name 'child_name'
         Args:
             element: The XML parent node to search from
@@ -468,7 +474,11 @@ class LxmlElement:
 
     @staticmethod
     def find_all_children_with_attribute_value(
-        element: Element, name: str, attrib_name: str, attrib_value: str, namespace: str = "*"
+        element: Element,
+        name: str,
+        attrib_name: str,
+        attrib_value: str,
+        namespace: str = "*",
     ) -> List:
         """Find all the XML elements with the attribute name 'attrib_name' having a given value  'attrib_value'
         Args:

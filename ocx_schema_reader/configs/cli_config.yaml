@@ -1,0 +1,6 @@
+#  Copyright (c) 2023.  OCX Consortium https://3docx.org. See the LICENSE
+# Main app specific config settings
+LOG_FOLDER: 'log/'
+INFO_COLOR: 'blue'
+ERROR_COLOR: 'red'
+APP: 'OCX'

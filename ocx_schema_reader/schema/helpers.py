@@ -6,7 +6,7 @@ from typing import Dict, List, Union
 
 from lxml.etree import Element, ElementTextIterator
 
-from ocx_schema_reader.parse.data_classes import SchemaChange
+from ocx_schema_reader.schema.data_classes import SchemaChange
 from ocx_schema_reader.schema_xml.element import LxmlElement
 
 
@@ -60,11 +60,15 @@ class SchemaHelper:
         if len(LxmlElement.find_all_children_with_name(element, "complexContent")) > 0:
             # complexContent has either an extension or a restriction
             # extension
-            base = LxmlElement.find_all_children_with_name_and_attribute(element, "extension", "base")
+            base = LxmlElement.find_all_children_with_name_and_attribute(
+                element, "extension", "base"
+            )
             if len(base) > 0:
                 schema_type = base[0].get("base")
             # restriction
-            base = LxmlElement.find_all_children_with_name_and_attribute(element, "restriction", "base")
+            base = LxmlElement.find_all_children_with_name_and_attribute(
+                element, "restriction", "base"
+            )
             if len(base) > 0:
                 schema_type = base[0].get("base")
         # the element may be a simpleType
@@ -72,11 +76,15 @@ class SchemaHelper:
         if len(simple_type) > 0:
             # simpleType may have either an extension or a restriction
             # extension
-            base = LxmlElement.find_all_children_with_name_and_attribute(simple_type[0], "extension", "base")
+            base = LxmlElement.find_all_children_with_name_and_attribute(
+                simple_type[0], "extension", "base"
+            )
             if len(base) > 0:
                 schema_type = base[0].get("base")
             # restriction
-            base = LxmlElement.find_all_children_with_name_and_attribute(simple_type[0], "restriction", "base")
+            base = LxmlElement.find_all_children_with_name_and_attribute(
+                simple_type[0], "restriction", "base"
+            )
             if len(base) > 0:
                 schema_type = base[0].get("base")
 
@@ -120,7 +128,9 @@ class SchemaHelper:
         """
         version = "Missing"
         # root.findall('.//{*}attribute[@name="schemaVersion"]'
-        element = LxmlElement.find_all_children_with_attribute_value(root, "attribute", "name", "schemaVersion")
+        element = LxmlElement.find_all_children_with_attribute_value(
+            root, "attribute", "name", "schemaVersion"
+        )
         if len(element) > 0:
             version = element[0].get("fixed")
         return version
@@ -149,7 +159,12 @@ class SchemaHelper:
                     description = description + text
                     text = re.sub("[\n\t\r]", "", description)
                 description = text
-            schema_change = SchemaChange(change.get("version"), change.get("author"), change.get("date"), description)
+            schema_change = SchemaChange(
+                change.get("version"),
+                change.get("author"),
+                change.get("date"),
+                description,
+            )
             schema_changes.append(schema_change)
         return schema_changes
 

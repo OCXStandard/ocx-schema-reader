@@ -9,7 +9,12 @@ import requests
 from lxml.etree import Element, QName
 from requests import HTTPError
 
-from .config import DEFAULT_SCHEMA, SCHEMA_FOLDER, W3C_SCHEMA_BUILT_IN_TYPES, PROCESS_SCHEMA_TYPES
+from ocx_schema_reader.schema import (
+    DEFAULT_SCHEMA,
+    SCHEMA_FOLDER,
+    W3C_SCHEMA_BUILT_IN_TYPES,
+    PROCESS_SCHEMA_TYPES,
+)
 from .data_classes import SchemaSummary, SchemaType
 from .elements import (
     OcxAttribute,
@@ -50,9 +55,15 @@ class OcxSchema:
         self._is_parsed = False
         self._local_folder = local_folder
         self._default_schema = DEFAULT_SCHEMA
-        self._all_schema_elements = {}  # Hash table with tag as key schema_elements[tag] = lxml.etree.Element
-        self._ocx_global_elements = {}  # Hash table with tag as key, value pairs(tag, OcxGlobalElement)
-        self._all_types = defaultdict(list)  # Hash table with tag as key: all_types[tag] = lxml.etree.Element
+        self._all_schema_elements = (
+            {}
+        )  # Hash table with tag as key schema_elements[tag] = lxml.etree.Element
+        self._ocx_global_elements = (
+            {}
+        )  # Hash table with tag as key, value pairs(tag, OcxGlobalElement)
+        self._all_types = defaultdict(
+            list
+        )  # Hash table with tag as key: all_types[tag] = lxml.etree.Element
         self._schema_types = PROCESS_SCHEMA_TYPES
         self._schema_version = None
         self._schema_changes = defaultdict(list)
@@ -163,7 +174,8 @@ class OcxSchema:
                 with open(file, "wb") as f:
                     f.write(r.content)
                 self.log.debug(
-                    f'Successfully downloaded remote schema "{schema_url}" ' f'to local folder "{self._local_folder}"'
+                    f'Successfully downloaded remote schema "{schema_url}" '
+                    f'to local folder "{self._local_folder}"'
                 )
                 schema_url = file
             except HTTPError as e:
@@ -175,7 +187,9 @@ class OcxSchema:
             self.log.error(e.with_traceback)
             return False
         if self._is_parsed:
-            self.log.debug(f'Successfully parsed xsd schema with location "{schema_url}"')
+            self.log.debug(
+                f'Successfully parsed xsd schema with location "{schema_url}"'
+            )
             root = self._parser.get_root()
             ns = self._parser.get_namespaces()
             # Add the ns to the global namespace dict
@@ -198,8 +212,12 @@ class OcxSchema:
                 if len(changes) > 0:
                     self._schema_changes = changes
             # Build the look-up tables for all global element types
-            for schema_type in self._schema_types:  # Only search for selected element types
-                types = LxmlElement.find_all_children_with_name_and_attribute(root, schema_type, "name")
+            for (
+                    schema_type
+            ) in self._schema_types:  # Only search for selected element types
+                types = LxmlElement.find_all_children_with_name_and_attribute(
+                    root, schema_type, "name"
+                )
                 for e in types:
                     # Add element to look-up table
                     name = LxmlElement.get_name(e)
@@ -218,7 +236,9 @@ class OcxSchema:
                 self._is_parsed = self._parse_schema(url)
                 if self._is_parsed:
                     if ns not in list(self.get_namespaces().values()):
-                        self.log.error(f'Mismatched _namespace "{ns}" in xsd with url: "{url}"')
+                        self.log.error(
+                            f'Mismatched _namespace "{ns}" in xsd with url: "{url}"'
+                        )
                 else:
                     break
         return self._is_parsed
@@ -276,7 +296,9 @@ class OcxSchema:
                     for a in attributes:
                         ocx.add_attribute(self._process_attribute(a))
                 else:
-                    self.log.error(f"Attribute group {ref} is not found in the global look-up table")
+                    self.log.error(
+                        f"Attribute group {ref} is not found in the global look-up table"
+                    )
         # Iterate over parents
         parents = ocx.get_parents()
         for t in parents:
@@ -291,7 +313,9 @@ class OcxSchema:
                         for a in attributes:
                             ocx.add_attribute(self._process_attribute(a))
                     else:
-                        self.log.error(f"Attribute group {ref} is not found in the global look-up table")
+                        self.log.error(
+                            f"Attribute group {ref} is not found in the global look-up table"
+                        )
         return
 
     def _process_children(self, ocx: OcxGlobalElement):
@@ -303,7 +327,9 @@ class OcxSchema:
         """
 
         # Process all xs:element elements including all supertypes
-        elements = LxmlElement.find_all_children_with_name(ocx.get_schema_element(), "element")
+        elements = LxmlElement.find_all_children_with_name(
+            ocx.get_schema_element(), "element"
+        )
         for e in elements:
             ocx.add_child(self._process_child(e))
         # Iterate over parents
@@ -359,7 +385,9 @@ class OcxSchema:
 
         """
         if tag in self._builtin_xs_types:
-            self.log.debug(f"{__class__}: The tag {tag} is a built-in type {self._builtin_xs_types[tag]}")
+            self.log.debug(
+                f"{__class__}: The tag {tag} is a built-in type {self._builtin_xs_types[tag]}"
+            )
             return None
         if tag not in self._all_schema_elements.keys():
             self.log.debug(f"{__class__}: The tag {tag} is not in the look-up table")
@@ -380,7 +408,9 @@ class OcxSchema:
             return None, None
         tag = SchemaHelper.unique_tag(name, namespace)
         if tag in self._builtin_xs_types:
-            self.log.debug(f"The tag {tag} is a built-in type {self._builtin_xs_types[tag]}")
+            self.log.debug(
+                f"The tag {tag} is a built-in type {self._builtin_xs_types[tag]}"
+            )
             return None, None
         if tag not in self._all_schema_elements:
             self.log.debug(f"{__class__}: The tag {tag} is not in the look-up table")
@@ -429,7 +459,9 @@ class OcxSchema:
         # Find my parents
         self._find_parents(tag, ocx)
 
-    def get_ocx_element_from_type(self, schema_type: str) -> Union[OcxGlobalElement, None]:
+    def get_ocx_element_from_type(
+            self, schema_type: str
+    ) -> Union[OcxGlobalElement, None]:
         """Method to retrieve the schema ``element etree.Element`` with the key 'type'
 
         Args:
@@ -447,12 +479,16 @@ class OcxSchema:
                     namespace = self._namespace[prefix]
                     tag = SchemaHelper.unique_tag(name, namespace)
                     if tag not in self._all_schema_elements:
-                        self.log.debug(f"{__class__}: The tag {tag} is not in the look-up table")
+                        self.log.debug(
+                            f"{__class__}: The tag {tag} is not in the look-up table"
+                        )
                         return None
                     else:
                         return self._ocx_global_elements[tag]
         else:
-            self.log.debug(f'{__class__}: The _namespace prefix  "{nsprefix}" is not defined')
+            self.log.debug(
+                f'{__class__}: The _namespace prefix  "{nsprefix}" is not defined'
+            )
             return None
 
     def _get_prefix_from_namespace(self, namespace: str) -> str:
@@ -464,7 +500,9 @@ class OcxSchema:
         """
         prefix = "None"
         if namespace not in list(self._namespace.values()):
-            self.log.debug(f"The _namespace {namespace} is not in the global _namespace dict")
+            self.log.debug(
+                f"The _namespace {namespace} is not in the global _namespace dict"
+            )
         for item in self._namespace:
             if namespace == self._namespace[item]:
                 prefix = item
@@ -485,7 +523,9 @@ class OcxSchema:
                     f'The _namespace prefix "{prefix}" already exists. '
                     f"Dropping new _namespace {namespace[prefix]} from the _namespace table"
                 )
-                self.log.debug(f'The existing _namespace with prefix "{prefix}" is: {self._namespace[prefix]}')
+                self.log.debug(
+                    f'The existing _namespace with prefix "{prefix}" is: {self._namespace[prefix]}'
+                )
                 del namespace[prefix]
         self._namespace = {**self._namespace, **namespace}
         return len(self._namespace) - len(ns)
@@ -605,7 +645,10 @@ class OcxSchema:
         """
 
         schema_version = [("Schema Version", self.get_schema_version())]
-        schema_types = [(schema_type, len(self._all_types[schema_type])) for schema_type in self._all_types]
+        schema_types = [
+            (schema_type, len(self._all_types[schema_type]))
+            for schema_type in self._all_types
+        ]
         namespaces = [(ns, self._namespace[ns]) for ns in self._namespace]
         return SchemaSummary(schema_version, schema_types, namespaces)
 
@@ -695,4 +738,6 @@ class OcxSchema:
         prefix = self._get_prefix_from_namespace(qn.namespace)
         if prefix == "None":
             self.log.error(f"Tag {tag} has an unknown _namespace")
-        return SchemaType(prefix, LxmlElement.get_name(e), tag, LxmlElement.get_source_line(e))
+        return SchemaType(
+            prefix, LxmlElement.get_name(e), tag, LxmlElement.get_source_line(e)
+        )

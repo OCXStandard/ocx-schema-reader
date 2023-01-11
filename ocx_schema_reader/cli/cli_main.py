@@ -9,25 +9,20 @@ import logging
 from logging import config
 import colorlog
 
-import ocx_schema_reader.parse.config
 from .schema import schema
-from ocx_schema_reader.parse.reader import OcxSchema
+from ocx_schema_reader.schema.parser import OcxSchema
 from .cli_context import GlobalContext
-import ocx_schema_reader.utils as utils
-from .config import INFO_COLOR, ERROR_COLOR, APP
+from ocx_schema_reader.cli import INFO_COLOR, ERROR_COLOR, APP, LOG_FILE, log_config
+from ocx_schema_reader.schema import SCHEMA_FOLDER
 
-LOG_CONFIG_YAML = "log_config.yaml"
-conf = Path(utils.root_dir()) / LOG_CONFIG_YAML
-
-with open(conf) as f:
-    log_config = yaml.safe_load(f)
-
-hndle = log_config["handlers"].get("file")
-LOG_FILE = hndle.get("filename")
 # Set the logging configuration
 config.dictConfig(log_config)
 bold_seq = "\033[1m"
-colorlog_format = f"{bold_seq} " "%(log_color)s " f"{log_config.get('formatters').get('std_out').get('format')}"
+colorlog_format = (
+    f"{bold_seq} "
+    "%(log_color)s "
+    f"{log_config.get('formatters').get('std_out').get('format')}"
+)
 colorlog.basicConfig(format=colorlog_format)
 logger = logging.getLogger()  # Todo: Color logging does not work from main.py
 
@@ -38,10 +33,15 @@ def cli(ctx):
     """
     Main CLI
     """
-    secho(f"Effective log level is: {logging.getLevelName(logger.getEffectiveLevel())}", color=INFO_COLOR)
+    secho(
+        f"Effective log level is: {logging.getLevelName(logger.getEffectiveLevel())}",
+        color=INFO_COLOR,
+    )
     ctx.obj = GlobalContext(logger)
     # add tools to the context
-    ctx.obj.register_tool(OcxSchema(logger, ocx_schema_reader.parse.config.SCHEMA_FOLDER))
+    ctx.obj.register_tool(
+        OcxSchema(logger, SCHEMA_FOLDER)
+    )
 
 
 @cli.command(short_help="Clear the screen")
@@ -70,13 +70,19 @@ def set_level(level):
         case _:
             lev = logging.INFO
     logger.setLevel(lev)
-    secho(f"Effective log level: {logging.getLevelName(logger.getEffectiveLevel())}", color=INFO_COLOR)
+    secho(
+        f"Effective log level: {logging.getLevelName(logger.getEffectiveLevel())}",
+        color=INFO_COLOR,
+    )
 
 
 @cli.command(short_help="Print the logging level")
 def log_level():
-    """Print the application log handler levels"""
-    secho(f"Effective log level: {logging.getLevelName(logger.getEffectiveLevel())}", color=INFO_COLOR)
+    """Print the application logging levels"""
+    secho(
+        f"Effective log level: {logging.getLevelName(logger.getEffectiveLevel())}",
+        color=INFO_COLOR,
+    )
 
 
 @cli.command(short_help="List the table options")
@@ -88,7 +94,10 @@ def table_defaults(ctx):
     sep = glob_ctx.get_column_separator()
     out = glob_ctx.get_table_output()
     index_rows = glob_ctx.get_row_numbers()
-    table = [["Format", "Column seperator", "Output", "Row indexes"], [fmt, sep, out, index_rows]]
+    table = [
+        ["Format", "Column seperator", "Output", "Row indexes"],
+        [fmt, sep, out, index_rows],
+    ]
     secho(tabulate(table, headers="firstrow"), color=INFO_COLOR)
 
 
@@ -119,7 +128,9 @@ def table_defaults(ctx):
     ),
 )
 @option("--sep", help="The column seperator. Default = whitespace", default="")
-@option("--output", help="Output the table to a file. Default =stdout`", default="stdout")
+@option(
+    "--output", help="Output the table to a file. Default =stdout`", default="stdout"
+)
 @option(
     "--row-numbers",
     "-r",
@@ -136,6 +147,6 @@ def table_options(ctx, fmt, sep, output, row_numbers):
     glob_ctx.table_row_numbers(row_numbers)
 
 
-# Add any subcommands and set up the tools
+# Arrange all command groups
 cli.add_command(schema)
 """ The schema sub-commands """

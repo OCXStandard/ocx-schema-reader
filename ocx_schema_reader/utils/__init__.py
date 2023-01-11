@@ -173,10 +173,18 @@ def list_files_in_directory(directory: str, file_ext: str = ".3docx") -> list:
 
 
 def load_yaml_config(config: Path) -> dict:
-    """Safely read a yaml config file and return the content as a dict"""
+    """Safely read a yaml config file and return the content as a dict
+
+        Args:
+            config: Path to yaml file
+        Raises:
+            Raise ``errno.ENOENT`` if yaml file does not exist
+    """
     if config.exists():
         with open(config.absolute()) as f:
             app_config = yaml.safe_load(f)
         return app_config
     else:
-        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), config.absolute())
+        raise FileNotFoundError(
+            errno.ENOENT, os.strerror(errno.ENOENT), config.absolute()
+        )

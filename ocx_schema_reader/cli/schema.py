@@ -6,17 +6,15 @@ from click_shell import shell
 from click import Choice, prompt
 from click import Path as ClickPath
 from click import argument, option, pass_context, secho
+import click
 from fuzzywuzzy import fuzz
 from tabulate import tabulate
 from ocx_schema_reader.schema_xml.element import LxmlElement
-from ocx_schema_reader.parse.reader import OcxSchema
 from .cli_context import GlobalContext
 
 import ocx_schema_reader.utils as utils
-from .config import INFO_COLOR, ERROR_COLOR, APP
-from ocx_schema_reader.parse.config import DEFAULT_SCHEMA, SCHEMA_FOLDER
-
-PROMPT = "SCHEMA"
+from ocx_schema_reader.cli import INFO_COLOR, ERROR_COLOR
+from ocx_schema_reader.schema import DEFAULT_SCHEMA, APP
 
 
 def print_table(table: list, glob_ctx: GlobalContext, to_list: bool = True):
@@ -28,14 +26,26 @@ def print_table(table: list, glob_ctx: GlobalContext, to_list: bool = True):
         result = utils.dict_to_list(table, index_rows)
         secho(tabulate(result, headers="firstrow", tablefmt=fmt), fg=INFO_COLOR)
     else:
-        secho(tabulate(table, headers="firstrow", tablefmt=fmt, showindex=index_rows), fg=INFO_COLOR)
+        secho(
+            tabulate(table, headers="firstrow", tablefmt=fmt, showindex=index_rows),
+            fg=INFO_COLOR,
+        )
 
 
-@shell(prompt=f"{PROMPT} > ", intro=f"Starting {PROMPT}..")
+@shell(prompt=f"{APP} > ", intro=f"Starting {APP}..")
 @pass_context
 def schema(ctx):
     """The schema subcommands"""
     pass
+
+
+@schema.command(short_help="Invoke a parent command from the list")
+@pass_context
+def invoke(ctx):
+    parent = ctx.parent
+    cli = parent.command
+    parent_commands = cli.list_commands(parent)
+    click.prompt('Select command:', parent_commands)
 
 
 @schema.command(short_help="The OCX xsd file to be parsed.")
@@ -130,16 +140,21 @@ def summary(ctx):
     prompt="Name of the schema XSD file to be parsed. It can also be a valid URL:",
     default=DEFAULT_SCHEMA,
     required=False,
+
 )
 @pass_context
 def parse(ctx, xsd):
-    """Parse the schema XSD file"""
+    """ Parse a schema XSD file.
+
+        Options
+            ``--xsd``:     Name of the schema XSD file to be parsed. It can also be a valid URL.
+    """
     glob_ctx = ctx.obj
     schema_reader = glob_ctx.get_tool("OcxSchema")
     if schema_reader.process_schema(xsd):
         secho(f"The schema {xsd} has been successfully parsed", fg=INFO_COLOR)
     else:
-        secho(f"An error occurred when parsing the  {xsd}", fg=ERROR_COLOR)
+        secho(f"An error occurred when parsing the {xsd}", fg=ERROR_COLOR)
 
 
 @schema.command(short_help="List attributeGroup")
@@ -229,10 +244,13 @@ def namespace(ctx):
 @argument("element", type=str, nargs=1)
 @pass_context
 def inspect(ctx, element):
-    """Inspect a named schema ELEMENT. Enter the named ELEMENT to be inspected "
-    including any namespace prefix on the form `prefix:Name`.
-    The output includes all attributes and subtypes of the ELEMENT and"
-    the ELEMENT super types.
+    """Inspect a named schema ``ELEMENT``.
+
+    Arguments:
+        ``ELEMENT``:  The name of the schema element to be inspected
+        including any namespace prefix on the form ``prefix:Name``.
+        The output includes all attributes and subtypes of the ``ELEMENT`` and
+        the ``ELEMENT`` super types.
     """
     glob_ctx = ctx.obj
     fmt = glob_ctx.get_table_format()
@@ -246,10 +264,16 @@ def inspect(ctx, element):
             )
             secho("\nSub-elements:", fg=INFO_COLOR)
             result = e.children_to_dict()
-            secho(tabulate(result, headers=list(result.keys()), tablefmt=fmt), fg=INFO_COLOR)
+            secho(
+                tabulate(result, headers=list(result.keys()), tablefmt=fmt),
+                fg=INFO_COLOR,
+            )
             secho("\nAttributes:", fg=INFO_COLOR)
             result = e.attributes_to_dict()
-            secho(tabulate(result, headers=list(result.keys()), tablefmt=fmt), fg=INFO_COLOR)
+            secho(
+                tabulate(result, headers=list(result.keys()), tablefmt=fmt),
+                fg=INFO_COLOR,
+            )
             items = e.get_parents()
             parents = []
             for key in items:
@@ -264,9 +288,12 @@ def inspect(ctx, element):
                 fg=ERROR_COLOR,
             )
             global_elements = [
-                f"{element.get_prefix()}:{element.get_name()}" for element in schema_reader.get_ocx_elements()
+                f"{element.get_prefix()}:{element.get_name()}"
+                for element in schema_reader.get_ocx_elements()
             ]
-            closest = max([(fuzz.token_set_ratio(element, j), j) for j in global_elements])
+            closest = max(
+                [(fuzz.token_set_ratio(element, j), j) for j in global_elements]
+            )
             ans = prompt(f"Did you mean {closest[1]}? (Yes/No)", default="Yes")
             if ans.lower() == "yes" or ans.lower() == "y":
                 ctx.invoke(inspect, closest[1])
@@ -298,7 +325,7 @@ def elements(ctx):
             table["Description"].append(e.get_annotation())
             table["Namespace"].append(e.get_namespace())
         if index_rows:
-            table = number_table_rows(table, 1)
+            table = utils.number_table_rows(table, 1)
         secho(tabulate(table, headers=list(table.keys()), tablefmt=fmt), fg=INFO_COLOR)
     else:
         secho("No schema has been parsed. Parse a schema first", fg=INFO_COLOR)

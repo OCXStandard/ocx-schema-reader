@@ -5,10 +5,12 @@ import os
 import sys
 import logging
 
-from ocx_schema_reader.schema_xml.parse import LxmlParser
-from ocx_schema_reader.parse.reader import OcxSchema
-
+# To make sure that the tests import the ocx_schema_reader modules this has to come before the import statements
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from ocx_schema_reader.schema_xml.parse import LxmlParser
+from ocx_schema_reader.schema.parser import OcxSchema
+
 logger = logging.Logger(__name__)
 
 

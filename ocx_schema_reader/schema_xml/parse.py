@@ -11,11 +11,12 @@ from .element import LxmlElement
 
 class LxmlParser:
     """A wrapper of the lxml etree document tree and parser.
+
     Args:
-        logger: The instance of the python logger
+        logger: The instance of the Python logger
 
     Attributes:
-        _tree : The lxml etree DOM
+        _tree : The ``lxml.etree`` DOM
         _log: The Python logger
 
     """
@@ -39,7 +40,10 @@ class LxmlParser:
         parsed = False
         try:
             my_parser = etree.XMLParser(
-                remove_comments=False, remove_blank_text=True, ns_clean=True, collect_ids=store_ids
+                remove_comments=False,
+                remove_blank_text=True,
+                ns_clean=True,
+                collect_ids=store_ids,
             )
             self._tree = etree.parse(file, parser=my_parser)
             parsed = True

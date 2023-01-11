@@ -1,6 +1,6 @@
 #  Copyright (c) 2022. OCX Consortium https://3docx.org. See the LICENSE
 
-from ocx_schema_reader.parse.helpers import SchemaHelper
+from ocx_schema_reader.schema.helpers import SchemaHelper
 
 
 class TestSchemaHelpers:

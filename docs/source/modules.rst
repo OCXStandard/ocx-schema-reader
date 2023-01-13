@@ -1,15 +1,11 @@
-ocx-tools API
+OCX-tools API
 =============
 
 Modules
 -------
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-.. autosummary::
-   :toctree: autosummary
+   :maxdepth: 4
 
    cli
    schema

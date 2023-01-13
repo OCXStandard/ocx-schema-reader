@@ -1,53 +1,53 @@
-ocx\_schema\_reader package
-===========================
+ocx_tools package
+=================
 
 Submodules
 ----------
 
-ocx\_schema\_reader.schema\_cli module
+ocx_tools.schema_cli module
 --------------------------------------
 
-.. automodule:: ocx_schema_reader.schema_cli
+.. automodule:: ocx_tools.schema_cli
    :members:
    :undoc-members:
    :show-inheritance:
 
-ocx\_schema\_reader.schema\_elements module
+ocx_tools.schema_elements module
 -------------------------------------------
 
-.. automodule:: ocx_schema_reader.schema_elements
+.. automodule:: ocx_tools.schema_elements
    :members:
    :undoc-members:
    :show-inheritance:
 
-ocx\_schema\_reader.schema\_helpers module
+ocx_tools.schema_helpers module
 ------------------------------------------
 
-.. automodule:: ocx_schema_reader.schema_helpers
+.. automodule:: ocx_tools.schema_helpers
    :members:
    :undoc-members:
    :show-inheritance:
 
-ocx\_schema\_reader.schema\_reader module
+ocx_tools.schema_reader module
 -----------------------------------------
 
-.. automodule:: ocx_schema_reader.schema_reader
+.. automodule:: ocx_tools.schema_reader
    :members:
    :undoc-members:
    :show-inheritance:
 
-ocx\_schema\_reader.schema\_data\_classes module
+ocx_tools.schema_data_classes module
 ------------------------------------------------
 
-.. automodule:: ocx_schema_reader.schema_data_classes
+.. automodule:: ocx_tools.schema_data_classes
    :members:
    :undoc-members:
    :show-inheritance:
 
-ocx\_schema\_reader.utils module
+ocx_tools.utils module
 --------------------------------
 
-.. automodule:: ocx_schema_reader.utils
+.. automodule:: ocx_tools.utils
    :members:
    :undoc-members:
    :show-inheritance:
@@ -55,7 +55,7 @@ ocx\_schema\_reader.utils module
 Module contents
 ---------------
 
-.. automodule:: ocx_schema_reader
+.. automodule:: ocx_tools
    :members:
    :undoc-members:
    :show-inheritance:

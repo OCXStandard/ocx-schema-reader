@@ -1,5 +1,5 @@
-The main CLI commands
-=====================
+The CLI commands
+================
 
 
 The ''cli'' commnds
@@ -9,8 +9,8 @@ The ''cli'' commnds
    :prog: cli
    :nested: full
 
-The ''schema'' commnds
-**********************
+The ''schema'' commands
+***********************
 
 .. click:: ocx_tools.cli.schema:schema
    :prog: schema

@@ -2,8 +2,8 @@ The CLI commands
 ================
 
 
-The ''cli'' commnds
-*******************
+The ''cli'' commands
+********************
 
 .. click:: ocx_tools.cli.cli_main:cli
    :prog: cli

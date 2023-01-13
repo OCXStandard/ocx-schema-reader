@@ -1,8 +1,7 @@
 ocx-tools modules
 =================
-
-.. toctree::
-   :maxdepth: 4
+.. autosummary::
+   :toctree: generated
 
    cli
    schema

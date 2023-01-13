@@ -3,7 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ocx-tools' documentation!
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../ocx_tools'))
+
+Welcome to OCX-tools' documentation!
 ====================================
 
 .. toctree::

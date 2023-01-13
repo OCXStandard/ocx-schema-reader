@@ -133,8 +133,10 @@ listed in the file.
 
 ## API Reference
 
+[![Documentation Status](https://readthedocs.org/projects/ocx-schema-reader/badge/?version=latest)](https://ocx-schema-reader.readthedocs.io/en/latest/?badge=latest)
+
 The API documentation is built using Sphinx. The documentation is published to Read The Docs for the latest version:
-[Read the Docs API documentation](https://ocx-schema-reader.readthedocs.io/en/latest/index.html)
+[API documentation](https://ocx-schema-reader.readthedocs.io/en/latest/index.html)
 
 ## Tests
 

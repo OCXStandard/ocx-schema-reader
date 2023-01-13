@@ -6,6 +6,5 @@ ocx-schema-reader modules
 
    cli
    schema
-   parse
    schema_xml
    utils

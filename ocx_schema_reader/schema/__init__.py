@@ -3,7 +3,9 @@
 from pathlib import Path
 from ocx_schema_reader import utils
 
-config_file = Path(utils.root_dir()) / "configs" / "schema_config.yaml"  # The schema config
+config_file = (
+    Path(utils.root_dir()) / "configs" / "schema_config.yaml"
+)  # The schema config
 
 app_config = utils.load_yaml_config(config_file)  # safe yaml load
 

@@ -11,11 +11,7 @@ RM = 'del -Confirmed False'
 PACKAGE := ocx_schema_reader
 MODULES := $(wildcard $(PACKAGE)/*.py)
 COMMIT_HASH = `git rev-parse --short HEAD 2>/dev/null`
-SPHINXBUILD = python -m sphinx
-SPHINXOPTS = "html"
-SOURCEDIR = "$(CURDIR)/docs/source"
-BUILDDIR =  "$(CURDIR)/docs/build/"
-COVDIR = "htmlcov"
+
 #BUILD_DATE = `date +%D.%T`
 ## Determine which VENV to use
 #ifeq ($(OS),Windows_NT)
@@ -71,7 +67,7 @@ all: install
 .PHONY: install
 
 PHONY: run
-run: ## Start the ocx-schema-reader CLI
+run: ## Start ocx-tools CLI
 	python main.py
 
 # TESTS #######################################################################
@@ -83,7 +79,7 @@ test:  ## Run unit and integration tests
 
 test-upd:  ## Update the regression tests baseline
 	@pytest --force-regen
-
+PHONY: test-upd
 
 test-cov:  ## Show the test coverage report
 	cmd /c start $(CURDIR)/$(COVDIR)/index.html
@@ -100,14 +96,20 @@ lint:	## Run formatters, linters, and static code security scanners bandit and j
 	@printf "${BLUE}\nRunning Jake against installed dependencies...${NC}\n"
 	conda list | jake ddt | grep VULNERABLE
 
-PHONY: lint
+.PHONY: lint
 
 jake:   ## Detailed report from jake security scanner on all modules installed in the conda environment
 	@printf "${BLUE}\nRunning Jake against installed dependencies...${NC}\n"
 	conda list | jake ddt
-PHONY: jake
+.PHONY: jake
 
 # DOCUMENTATION ##############################################################
+SPHINXBUILD = python -m sphinx
+SPHINXOPTS = "html"
+SOURCEDIR = "$(CURDIR)/docs/source"
+BUILDDIR =  "$(CURDIR)/docs/build/"
+COVDIR = "htmlcov"
+
 html-serve: ## Open the the html docs built by Sphinx
 	@cmd /c start "$(BUILDDIR)$(SPHINXOPTS)/index.html"
 
@@ -115,8 +117,8 @@ sphinx-help:  ## Sphinx options
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 doc: ## Build the html docs using Sphinx. For other Sphinx options, run make in the docs folder
-	@$(SPHINXBUILD) -M clean "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-	@$(SPHINXBUILD) -a "$(SOURCEDIR)" "$(BUILDDIR)/$(SPHINXOPTS)" -b "$(SPHINXOPTS)"
+	@$(SPHINXBUILD)  -M clean "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@$(SPHINXBUILD)  "$(SOURCEDIR)" "$(BUILDDIR)/$(SPHINXOPTS)" -b "$(SPHINXOPTS)"
 
 
 # BUILD #######################################################################

@@ -10,6 +10,7 @@ config = utils.load_yaml_config(config_file)
 INFO_COLOR = config.get("INFO_COLOR")
 ERROR_COLOR = config.get("ERROR_COLOR")
 APP = config.get("APP")
+LOGO = config.get("LOGO")
 
 log_config_file = config_folder / "log_config.yaml"
 log_config = utils.load_yaml_config(log_config_file)

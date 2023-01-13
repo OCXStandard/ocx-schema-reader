@@ -7,7 +7,6 @@ import re
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List
-
 import yaml
 
 
@@ -17,13 +16,18 @@ def root_dir() -> str:
 
 
 def current_dir(file: str) -> str:
-    """Path to file"""
+    """The full path to the folder containing the ``file``
+
+     Args:
+         file: The name of an existing file
+     """
     return os.path.realpath(os.path.join(os.path.dirname(file), ""))
 
 
 def nested_dict():
     """
-    Creates a default dictionary where each value is an other default dictionary.
+    A recursive function that creates a default dictionary where each value is
+    another default dictionary.
     """
     return defaultdict(nested_dict)
 
@@ -92,7 +96,12 @@ def tree(paths: dict, prefix: str = ""):
 
 
 def dict_to_list(items: dict, row_numbers: bool = False) -> List:
-    """Convert a dict to a list of dict values with the keys as first row in the list"""
+    """Convert a dict to a list of dict values with the dict keys as first row in the list
+
+    Args:
+        items: The dictionary to be converted
+        row_numbers: Add a row index as the first column in the table
+    """
     result = []
     i = 0
     for key, item in items.items():
@@ -114,7 +123,8 @@ def number_table_rows(table: dict, first_index: int = 0) -> Dict:
     """Utility function to add row numbers to the first column of a table stored as a dict
 
     Args:
-        table. The input table dict
+        table: The input table dict
+        first_index: The first row index value. Default = 0
 
     Returns:
         a table (dict) with numbered rows in the first column
@@ -129,6 +139,7 @@ def number_table_rows(table: dict, first_index: int = 0) -> Dict:
 
 
 def find_replace_multi(string, dictionary) -> str:
+    """ Substitute every value in a dict if it matches"""
     for item in dictionary.keys():
         # sub item for item's paired value in string
         string = re.sub(item, dictionary[item], string)
@@ -137,10 +148,9 @@ def find_replace_multi(string, dictionary) -> str:
 
 def logging_level(loglevel: str) -> int:
     """Utility function to return the logging level
+
     Args:
-        loglevel (str) One of 'INFO, 'WARNING', 'ERROR' or 'DEBUG
-    Return:
-        level (int) The Python logging level
+        loglevel: One of ``INFO``, ``WARNING``, ``ERROR`` or ``DEBUG``
     """
     # Set the console logging level
     level = logging.INFO
@@ -175,10 +185,10 @@ def list_files_in_directory(directory: str, file_ext: str = ".3docx") -> list:
 def load_yaml_config(config: Path) -> dict:
     """Safely read a yaml config file and return the content as a dict
 
-        Args:
-            config: Path to yaml file
-        Raises:
-            Raise ``errno.ENOENT`` if yaml file does not exist
+    Args:
+        config: Path to yaml file
+    Raises:
+        Raise ``errno.ENOENT`` if yaml file does not exist
     """
     if config.exists():
         with open(config.absolute()) as f:

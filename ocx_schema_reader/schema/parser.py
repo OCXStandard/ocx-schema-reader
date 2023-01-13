@@ -213,7 +213,7 @@ class OcxSchema:
                     self._schema_changes = changes
             # Build the look-up tables for all global element types
             for (
-                    schema_type
+                schema_type
             ) in self._schema_types:  # Only search for selected element types
                 types = LxmlElement.find_all_children_with_name_and_attribute(
                     root, schema_type, "name"
@@ -460,7 +460,7 @@ class OcxSchema:
         self._find_parents(tag, ocx)
 
     def get_ocx_element_from_type(
-            self, schema_type: str
+        self, schema_type: str
     ) -> Union[OcxGlobalElement, None]:
         """Method to retrieve the schema ``element etree.Element`` with the key 'type'
 

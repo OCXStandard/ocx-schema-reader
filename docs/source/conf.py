@@ -29,7 +29,6 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx_autodoc_typehints",
     "sphinx_click",
-    "click_extra.sphinx",
 ]
 
 templates_path = ["_templates"]

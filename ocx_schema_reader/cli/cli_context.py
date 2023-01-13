@@ -2,8 +2,23 @@
 
 from typing import Any, DefaultDict, Dict
 from logging import Logger
+import validators
 
 import click
+
+
+class UrlParamType(click.ParamType):
+    """Check if the param is a valid URL and can be accessed"""
+
+    name = "url"
+
+    def convert(self, value, param, ctx):
+        """Parameter validator"""
+
+        if validators.url(value):
+            return value
+        else:
+            self.fail(f"{value!r} is not a valid url", param, ctx)
 
 
 class GlobalContext:
@@ -41,7 +56,7 @@ class GlobalContext:
         return self._logger
 
     def register_command(self, command: str):
-        """ Register a command with the global context object
+        """Register a command with the global context object
         Args:
             command: The command name
 
@@ -49,7 +64,7 @@ class GlobalContext:
         self._cli_commands.append(command)
 
     def get_main_command_context(self) -> click.Context:
-        """ Return the main CLI context object """
+        """Return the main CLI context object"""
         return self._main_ctx
 
     def table_format(self, fmt: str = "simple"):

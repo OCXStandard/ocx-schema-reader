@@ -10,11 +10,13 @@ import click
 from fuzzywuzzy import fuzz
 from tabulate import tabulate
 from ocx_schema_reader.schema_xml.element import LxmlElement
-from .cli_context import GlobalContext
+from .cli_context import GlobalContext, UrlParamType
 
 import ocx_schema_reader.utils as utils
 from ocx_schema_reader.cli import INFO_COLOR, ERROR_COLOR
 from ocx_schema_reader.schema import DEFAULT_SCHEMA, SUB_COMMAND
+
+URL = UrlParamType()
 
 
 def print_table(table: list, glob_ctx: GlobalContext, to_list: bool = True):
@@ -35,43 +37,40 @@ def print_table(table: list, glob_ctx: GlobalContext, to_list: bool = True):
 @shell(prompt=f"{SUB_COMMAND} > ", intro=f"Starting {SUB_COMMAND}..")
 @pass_context
 def schema(ctx):
-    """The schema subcommands"""
-    pass
-
-
-@schema.command(short_help="Invoke a parent CLI command")
-@argument('command', nargs=1, required=True)
-@option('--opt', help="The command option")
-@pass_context
-def invoke(ctx, command, opt):
-    """ Invoke a command from the parent CLI"""
+    """The schema parser subcommands"""
     glob_ctx = ctx.obj
-    parent = glob_ctx.get_main_command_context()  # Main CLI context
-    main_command = parent.command.commands.get(command)
-    if main_command is not None:
-        if opt is not None:
-            args = ()
-            kwargs = {opt[0], opt[1]}
-            parent.invoke(main_command, opt)
-        else:
-            parent.forward(main_command)
-    else:
-        secho(f'No command {command} in main CLI', color=INFO_COLOR)
+    schema_reader = glob_ctx.get_tool("OcxSchema")
+    xsd = schema_reader.get_default_schema()
+    secho(f"Default schema: {xsd}", fg=INFO_COLOR)
+    secho("Parse it using the 'parse' command", fg=INFO_COLOR)
+    pass
 
 
 @schema.command(short_help="The OCX xsd file to be parsed.")
 @pass_context
 @option(
-    "-s",
-    "--schema_file",
-    help="Assign an OCX xsd file to be parsed. It must " "be a valid file path.",
-    prompt="Assign an OCX xsd file to be parsed",
+    "-f",
+    "--file",
+    help="Assign an OCX xsd file to be parsed. It must be a valid file path.",
     type=ClickPath(exists=True),
 )
-def assign_schema(ctx, schema_file):
-    """Assign an OCX xsd file to be parsed using the `parse` subcommand."""
+@option(
+    "-u",
+    "--url",
+    help="Assign URL giving the location of the XSD file to be parsed. It must be a valid and acessible URL.",
+    type=URL,
+)
+def assign_schema(ctx, file, url):
+    """Assign an OCX XSD schema to be parsed with the ``parse`` command.
+    A local file or a valid url location of the schema may be specified. If an url is specified, the program will
+    download the XSD schema to a local folder before parsing.
+
+    """
     schema_reader = ctx.obj.get_tool("OcxSchema")
-    schema_reader.put_default_schema(schema_file)
+    if file is not None:
+        schema_reader.put_default_schema(file)
+    else:
+        schema_reader.put_default_schema(url)
     secho(
         f"Assigned new default schema: {schema_reader.get_default_schema()}",
         fg=INFO_COLOR,
@@ -128,7 +127,7 @@ def changes(ctx, version):
 @schema.command(short_help="Output a schema summary")
 @pass_context
 def summary(ctx):
-    """Output the schema summary information."""
+    """Output the parsed schema summary information."""
     glob_ctx = ctx.obj
     schema_reader = glob_ctx.get_tool("OcxSchema")
     if schema_reader.is_parsed():
@@ -145,23 +144,13 @@ def summary(ctx):
         secho("No schema has been parsed. Parse a schema first", fg=INFO_COLOR)
 
 
-@schema.command(short_help="Parse the xsd")
-@option(
-    "--xsd",
-    prompt="Name of the schema XSD file to be parsed. It can also be a valid URL:",
-    default=DEFAULT_SCHEMA,
-    required=False,
-
-)
+@schema.command(short_help="Parse the assigned XSD schema")
 @pass_context
-def parse(ctx, xsd):
-    """ Parse a schema XSD file.
-
-        Options
-            ``--xsd``:     Name of the schema XSD file to be parsed. It can also be a valid URL.
-    """
+def parse(ctx):
+    """Parse the assigned XSD schema. Use the command 'assign-schema' to parse a different schema"""
     glob_ctx = ctx.obj
     schema_reader = glob_ctx.get_tool("OcxSchema")
+    xsd = schema_reader.get_default_schema()
     if schema_reader.process_schema(xsd):
         secho(f"The schema {xsd} has been successfully parsed", fg=INFO_COLOR)
     else:

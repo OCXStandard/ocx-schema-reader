@@ -9,7 +9,7 @@ import requests
 from lxml.etree import Element, QName
 from requests import HTTPError
 
-from ocx_schema_reader.schema import (
+from ocx_tools.schema import (
     DEFAULT_SCHEMA,
     SCHEMA_FOLDER,
     W3C_SCHEMA_BUILT_IN_TYPES,
@@ -22,7 +22,7 @@ from .elements import (
     OcxGlobalElement,
 )
 from .helpers import SchemaHelper
-from ocx_schema_reader.schema_xml.parse import LxmlElement, LxmlParser
+from ocx_tools.schema_xml.parse import LxmlElement, LxmlParser
 
 
 class OcxSchema:

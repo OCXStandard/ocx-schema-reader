@@ -1,4 +1,4 @@
-from ocx_schema_reader.schema.parser import OcxSchema
+from ocx_tools.schema.parser import OcxSchema
 
 
 class TestOcxSchema:

@@ -1,5 +1,5 @@
-ocx-schema-reader modules
-=========================
+ocx-tools modules
+=================
 
 .. toctree::
    :maxdepth: 4

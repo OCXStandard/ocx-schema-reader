@@ -6,13 +6,13 @@ from tabulate import tabulate
 import logging
 from logging import config
 import colorlog
-import ocx_schema_reader
+import ocx_tools
 from .schema import schema
-from ocx_schema_reader.schema.parser import OcxSchema
+from ocx_tools.schema.parser import OcxSchema
 from .cli_context import GlobalContext
-from ocx_schema_reader.cli import INFO_COLOR, ERROR_COLOR, APP, LOG_FILE, log_config
-import ocx_schema_reader.cli
-from ocx_schema_reader.schema import SCHEMA_FOLDER
+from ocx_tools.cli import INFO_COLOR, ERROR_COLOR, APP, LOG_FILE, log_config
+import ocx_tools.cli
+from ocx_tools.schema import SCHEMA_FOLDER
 
 LOGO = r"""
              ,----..
@@ -51,7 +51,7 @@ def cli(ctx):
     """
 
     secho(LOGO, fg="blue")
-    secho(f"Version: {ocx_schema_reader.__version__}", fg=INFO_COLOR)
+    secho(f"Version: {ocx_tools.__version__}", fg=INFO_COLOR)
     secho("Copyright (c) 2023. OCX Consortium https://3docx.org\n", fg=INFO_COLOR)
     secho(
         f"Effective log level is: {logging.getLevelName(logger.getEffectiveLevel())}",

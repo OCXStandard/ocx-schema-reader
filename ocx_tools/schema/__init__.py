@@ -1,7 +1,7 @@
 #  Copyright (c) 2023.  OCX Consortium https://3docx.org. See the LICENSE
 
 from pathlib import Path
-from ocx_schema_reader import utils
+from ocx_tools import utils
 
 config_file = (
     Path(utils.root_dir()) / "configs" / "schema_config.yaml"

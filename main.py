@@ -8,7 +8,7 @@ Removes empty string and current working directory from the first entry of
 in subcommands when invoked as `python -m meta_package_manager <command>`.
 """
 
-from ocx_schema_reader.cli.cli_main import cli
+from ocx_tools.cli.cli_main import cli
 
 if __name__ == "__main__":
     cli()

@@ -9,12 +9,12 @@ from click import argument, option, pass_context, secho
 import click
 from fuzzywuzzy import fuzz
 from tabulate import tabulate
-from ocx_schema_reader.schema_xml.element import LxmlElement
+from ocx_tools.schema_xml.element import LxmlElement
 from .cli_context import GlobalContext, UrlParamType
 
-import ocx_schema_reader.utils as utils
-from ocx_schema_reader.cli import INFO_COLOR, ERROR_COLOR
-from ocx_schema_reader.schema import DEFAULT_SCHEMA, SUB_COMMAND
+import ocx_tools.utils as utils
+from ocx_tools.cli import INFO_COLOR, ERROR_COLOR
+from ocx_tools.schema import DEFAULT_SCHEMA, SUB_COMMAND
 
 URL = UrlParamType()
 

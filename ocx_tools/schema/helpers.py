@@ -6,8 +6,8 @@ from typing import Dict, List, Union
 
 from lxml.etree import Element, ElementTextIterator
 
-from ocx_schema_reader.schema.data_classes import SchemaChange
-from ocx_schema_reader.schema_xml.element import LxmlElement
+from ocx_tools.schema.data_classes import SchemaChange
+from ocx_tools.schema_xml.element import LxmlElement
 
 
 class SchemaHelper:

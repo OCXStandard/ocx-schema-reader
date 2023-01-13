@@ -1,0 +1,5 @@
+# sphinx requirements for building the docs
+
+sphinx-autodoc-typehints
+sphinx_rtd_theme
+sphinx-click

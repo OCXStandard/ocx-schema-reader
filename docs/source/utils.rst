@@ -5,5 +5,5 @@ Utility functions
 The ''utils'' members
 *********************
 
-.. automodule:: ocx_schema_reader.utils
+.. automodule:: ocx_tools.utils
    :members:

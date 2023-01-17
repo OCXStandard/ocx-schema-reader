@@ -48,7 +48,7 @@ Icon*
 /.coverage.*
 /htmlcov/
 coverage.xml
-
+*.py,cover
 # Build and release directories
 /build/
 /dist/

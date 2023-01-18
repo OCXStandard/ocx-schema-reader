@@ -1,7 +1,8 @@
 # A self-documenting Makefile
 # You can set these variables from the command line, and also
 # from the environment for the first two.
-SOURCE = ./ocx_schema_reader/
+SOURCE = ./ocx_tools/
+CONDA_ENV = ocx
 # PS replacements for sh
 RM = 'del -Confirmed False'
 
@@ -22,13 +23,12 @@ COMMIT_HASH = `git rev-parse --short HEAD 2>/dev/null`
 
 # CONDA TASKS ##################################################################
 # PROJECT setup using conda and powershell
-.PHONY: conda-dev
-conda-dev:  ## Create a conda development environment from environment.yaml and install all packages
+.PHONY: conda-create
+conda-create:  ## Create a new conda environment with the python version and basic development tools
 	@conda env create -f environment.yaml
-	# ~/.conda.bash_env is a one-liner: eval "$(/path/to/bin/conda shell.bash hook)"
-	#export BASH_ENV=${HOME}\.conda.bash_env
-cd: conda-dev
-.PHONY: cd
+	@conda activate $(CONDA_ENV)
+cc: conda-create
+.PHONY: cc
 conda-upd:  environment.yaml ## Update the conda development environment when environment.yaml has changed
 	@conda env update -f environment.yaml
 cu: conda-upd
@@ -41,7 +41,7 @@ cl: conda-lock
 .PHONY: cl
 
 conda-activate: ## Activate the conda environment for the project
-	@conda activate ocx
+	@conda activate $(CONDA_ENV)
 ca: conda-activate
 .PHONY: ca
 

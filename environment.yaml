@@ -2,6 +2,10 @@ name: ocx
 channels:
   - conda-forge
   - msys2 # for m2-grep
+  # We want to have a reproducible setup, so we don't want default channels,
+  # which may be different for different users. All required channels should
+  # be listed explicitly here.
+  - nodefaults
 dependencies:
   - python=3.10
   - conda-lock
@@ -13,11 +17,11 @@ dependencies:
   - python-Levenshtein=0.20.8
   - lxml=4.9.2
   - requests=2.28.1
-  - validators
-  - python-semantic-release
+  - validators=0.18.2
+
 
   # Development deps
-  - poetry
+  - mamba # Faster conda downloads and better conflict resolver
   - sphinx
   - sphinx-autodoc-typehints
   - sphinx_rtd_theme
@@ -33,14 +37,14 @@ dependencies:
   - coverage
   - pytest-regressions
   - jake  # Vulnerability scanner for Conda packages
-  - bump2version
   - m2w64-make # GNU mMake for windows
   - m2-grep # Grep for windows. For Makefile sh
   - m2-gawk # awk for windows. for Makefile sh
-  - ascii-art # For creating fancy consoloe splash logo
   - pyinstaller  # For making a bundled python installation (--onefile)
   - pip
+  - python-semantic-release
   # Install any PyPi packages
   - pip:
       # Packages only on PyPi
       - click-shell==2.1 # conda has not version 2.1
+      - poetry==1.3.2 # Conda has only version 1.1.*

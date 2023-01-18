@@ -10,7 +10,7 @@ import ocx_tools
 from .schema import schema
 from ocx_tools.schema.parser import OcxSchema
 from .cli_context import GlobalContext
-from ocx_tools.cli import INFO_COLOR, ERROR_COLOR, APP, LOG_FILE, log_config
+from ocx_tools.cli import log_config, LOGO_COLOR, INFO_COLOR, ERROR_COLOR, APP
 import ocx_tools.cli
 from ocx_tools.schema import SCHEMA_FOLDER
 
@@ -50,12 +50,12 @@ def cli(ctx):
     Main CLI
     """
 
-    secho(LOGO, fg="blue")
+    secho(LOGO, fg=LOGO_COLOR)
     secho(f"Version: {ocx_tools.__version__}", fg=INFO_COLOR)
     secho("Copyright (c) 2023. OCX Consortium https://3docx.org\n", fg=INFO_COLOR)
     secho(
         f"Effective log level is: {logging.getLevelName(logger.getEffectiveLevel())}",
-        fg=INFO_COLOR,
+        fg=INFO_COLOR
     )
     ctx.obj = GlobalContext(logger, ctx)
     # add tools to the context

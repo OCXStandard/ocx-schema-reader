@@ -8,22 +8,9 @@
 ## Motivation
 
 The main motivation is to provide a set of tools to help the OCX standards community in maintaining and developing the OCX shchema. The toolset is a complement to the commercially available tools like XML tool as XMLSpy or Oxygen XML.
-## Installation
 
-We use the [Conda](https://conda.io/projects/conda/en/latest/index.html) package manager for building the python
-packages and distributing it. The motivation for this is to
-ensure cross-platform portability and benefit
-from [improved vulnerability scanning in Conda](https://pythonspeed.com/articles/conda-security-scans/).
-
-Install the package using Conda (a prerequisite is
-an [Anaconda or miniconda installation](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) on your
-system):
-
-```
-conda install -c conda-forge ocx_schema_reader
-```
-
-## The tools
+## The OCX-tools
+The OCX-tools is a set of interactive command line (CLI) shell utilities. The different CLIs are described in the subsequent sections.
 
 ### OCX
 
@@ -92,7 +79,7 @@ exit  help  quit
 
 ![ocx-tools](./docs/source/_static/ocx-tools-schema.gif)
 
-## Development Environment
+## The development environment
 
 ### Project structure
 
@@ -115,7 +102,7 @@ ocx-tools
 
 ```
 ### Makefile
-A tailor-made Makefile can be used to simplify the main development tasks
+A tailor-made Makefile in the root folder can be used to simplify the main development tasks
 Rune ```make``` in the shell from the project root folder to print the **Makefile** help:
 ```
 $ make
@@ -136,6 +123,50 @@ $ make
     test-upd                       Update the regression tests baseline
     test                           Run unit and integration tests
 ```
+### Conda
+
+We use the [Conda](https://conda.io/projects/conda/en/latest/index.html) package manager for providing the required python
+packages. The motivation for this is to ensure cross-platform portability and benefit
+from [improved vulnerability scanning in Conda](https://pythonspeed.com/articles/conda-security-scans/).
+
+Conda can be installed from an [Anaconda or miniconda installation](https://conda.io/projects/conda/en/latest/user-guide/install/index.html). 
+
+### Maintaining package dependencies
+The package dependencies are maintained in the yaml file ``environment.yaml`` located in the root folder. Conda will use this file to install the package dependencies.
+To update the environment, run the Makefile command ``make conda-upd``.
+
+### Locking the dependencies
+When a new release is ready the package dependencies shall be locked. This can be done with the Makefile command ``make conda-lock``. Conda will create a lock file ``environment.lock.yaml``. 
+This file is commited committed to source control with a release tag. 
+
+### Angular style git commit messages 
+``<type>`` refers to the kind of change made and is usually one of:
+
+- ``feat``: A new feature.
+- ``fix``: A bug fix.
+- ``docs``: Documentation changes.
+- ``style``: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc).
+- ``refactor``: A code change that neither fixes a bug nor adds a feature.
+- ``perf``: A code change that improves performance.
+- ``test``: Changes to the test framework.
+- ``build``: Changes to the build process or tools.
+
+``scope`` is an optional keyword that provides context for where the change was made. It can be anything relevant to your package or development workflow (e.g., it could be the module or function name affected by the change).
+
+### OCX-tools versioning
+The OCX-tools versions is following the semantic versioning scheme from [semver.org](https://semver.org/). We use the python package [python-semantic-relaese](https://python-semantic-release.readthedocs.io/en/latest/) to automate the process of maintaining consistent version strings.
+
+Python Semantic Release (PSR) is a tool that can automatically bump version numbers based on keywords it finds in commit messages. The idea is to use a standardized commit message format and syntax, which PSR can parse to determine how to increment the version number. The default commit message format used by PSR is the Angular commit style, which looks like this:
+````commandline
+<type>(optional scope): short summary in present tense
+
+(optional body: explains motivation for the change)
+
+(optional footer: note BREAKING CHANGES here, and issues to be closed)
+````
+
+### Automatic version bumping
+
 ## Testing
 All the tests can be executed using the Makefile command ```make test```:
 ````commandline
@@ -169,29 +200,8 @@ Copyright (c) 2023. OCX Consortium https://3docx.org
 A test coverage report is produced during the execution of the tests. Inspect it with the ```make test-cov``` command (example only):
 ```commandline
 $make test-cov
-Coverage report: 69%
-coverage.py v7.0.5, created at 2023-01-16 14:43 +0100
 ```
-
-| Module  | statements  | missing  |  excluded | coverage  |
-|---|---|---|---|---|	 	 	 	
-ocx_tools\__init__.py            |    3|  0| 	0| 	100%|
-ocx_tools\cli\__init__.py        |   13|  0| 	0| 	100%|
-ocx_tools\cli\cli_context.py 	 |   47|  6|	0|	87% |
-ocx_tools\cli\cli_main.py 	     |   76| 13|	0|	83% |
-ocx_tools\cli\schema.py 	     |  204|142|   0 |	30% |
-ocx_tools\schema\__init__.py 	 |   9 |  0|	0|	100%|
-ocx_tools\schema\data_classes.py |   29|  0|	0|	100%|
-ocx_tools\schema\elements.py 	 |  190| 81|	0|	57% |
-ocx_tools\schema\helpers.py 	 |   80|  9|	0|	89% |
-ocx_tools\schema\parser.py 	     |  323| 63|	0|	80% |
-ocx_tools\schema_xml\__init__.py | 	0  |  0|	0|	100%|
-ocx_tools\schema_xml\element.py  |	186| 21|	0|	89% |
-ocx_tools\schema_xml\parse.py 	 | 60  | 10|	0|	83% |
-ocx_tools\utils\__init__.py 	 | 92  | 62|	0|	33% |
-```
-coverage.py v7.0.5, created at 2023-01-16 16:47 +0100
-```
+![coverage](./docs/source/_static/test_coverage_report.png)
 
 ## Code style
 
@@ -199,35 +209,13 @@ If you're using any code style like xo, standard etc. That will help others whil
 
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
 
-## Screenshots
 
-Include logo/demo screenshot etc.
-
-## Tech/framework used
-
-[Click](https://click.palletsprojects.com/en/8.1.x/)
-
-<b>Built with</b>
-[Poetry](https://python-poetry.org/)
-
-## Features
-
-What makes your project stand out?
-
-## Code Example
-
-Show what the library does as concisely as possible, developers should be able to figure out **how** your project solves
-their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is
-short and concise.
-
-
-
-## API Reference
+## API Documentation
 
 [![Documentation Status](https://readthedocs.org/projects/ocx-tools/badge/?version=latest)](https://ocx-tools.readthedocs.io/en/latest/?badge=latest)
 
 
-The API documentation is built using Sphinx. The documentation is published to Read The Docs for the latest version:
+The API reference documentation is built using Sphinx. The documentation is published to Read The Docs for the latest version:
 [API documentation](https://ocx-tools.readthedocs.io/en/latest/index.html)
 
 

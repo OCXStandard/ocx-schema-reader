@@ -1,4 +1,4 @@
-[project]
+[tool.poetry]
 name = "ocx-tools"
 version = "0.1.0"
 description = "Interactive shell utility (CLI) tools for working with the OCX schema"
@@ -7,6 +7,10 @@ license = "MIT"
 repository = "https://github.com/OCXStandard/ocx-tools"
 documentation = "https://ocx-tools.readthedocs.io/en/latest/index.html"
 readme = "README.md"
+include = [
+    "CHANGELOG.md",
+    "ocx_tools/config/"
+]
 # Classifiers: http://pypi.python.org/pypi?%3Aaction=list_classifiers
 classifiers = [
     # Development Status :: 1 - Planning
@@ -21,15 +25,53 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3.10",
 ]
-packages = ["ocx_tools"]
 
-[project.scripts]
+packages = [
+    { include = "ocx_tools" }
+]
+[tool.poetry.scripts]
 ocx-tools = 'main.py:cli'
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 # requires = ["setuptools", "wheel"]
 # build-backend = "setuptools.build_meta"
+
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pyyaml = "6.0"
+click = "8.1.3"
+click-logging = "*"
+colorlog= "0.9.0"
+fuzzywuzzy= "0.18.0"
+tabulate= "0.9.0"
+python-Levenshtein = "0.20.8"
+lxml = "4.9.2"
+requests = "2.28.1"
+validators = "0.18.2"
+click-shell = "2.1"
+
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "*"
+black = "*"
+isort = "*"
+autoflake = "*"
+flake8 = "*"
+bandit = "*"
+pytest = "*"
+pytest-cov = "*"
+coverage = "*"
+pytest-regressions = "*"
+
+
+[tool.poetry.group.doc.dependencies]
+Sphinx = "*"
+sphinx-autodoc-typehints = "*"
+sphinx-click = "*"
+
 
 [tool.bandit]
 exclude_dirs = ["tests"]

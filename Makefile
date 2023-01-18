@@ -20,22 +20,30 @@ COMMIT_HASH = `git rev-parse --short HEAD 2>/dev/null`
 #    VENV = ${MACOS_ENV}
 #endif
 
+# CONDA TASKS ##################################################################
 # PROJECT setup using conda and powershell
 .PHONY: conda-dev
 conda-dev:  ## Create a conda development environment from environment.yaml and install all packages
 	@conda env create -f environment.yaml
 	# ~/.conda.bash_env is a one-liner: eval "$(/path/to/bin/conda shell.bash hook)"
 	#export BASH_ENV=${HOME}\.conda.bash_env
-
-.PHONY: conda-upd
+cd: conda-dev
+.PHONY: cd
 conda-upd:  environment.yaml ## Update the conda development environment when environment.yaml has changed
 	@conda env update -f environment.yaml
+cu: conda-upd
+.PHONY:cu
 
-conda-lock:  environment.lock.yaml ## Update the conda development environment when environment.yaml has changed
+conda-lock:  environment.yaml ## Update the conda development environment when environment.yaml has changed
 	@conda env export > environment.lock.yaml
-	# ~/.conda.bash_env is a one-liner: eval "$(/path/to/bin/conda shell.bash hook)"
-	#export BASH_ENV=${HOME}\.conda.bash_env
 
+cl: conda-lock
+.PHONY: cl
+
+conda-activate: ## Activate the conda environment for the project
+	@conda activate ocx
+ca: conda-activate
+.PHONY: ca
 
 # PROJECT DEPENDENCIES ########################################################
 
@@ -48,23 +56,17 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 
-var:  ## List Makefile variables
+var:
 	@printf "${BLUE}${SPHINXBUILD}"
 	@printf "${BLUE}${BUILDDIR}"
 	@printf "${BLUE}${SOURCEDIR}"
 	@printf "${BLUE}${SPHINXOPTS}"
 	@printf "${BLUE}${UMNAME}"
 
+.PHONY: var
 
 
-
-# MAIN TASKS ##################################################################
-
-.PHONY: all
-all: install
-
-
-.PHONY: install
+# RUN ##################################################################
 
 PHONY: run
 run: ## Start ocx-tools CLI
@@ -75,18 +77,23 @@ run: ## Start ocx-tools CLI
 FAILURES := .pytest_cache/pytest/v/cache/lastfailed
 
 test:  ## Run unit and integration tests
-	@pytest --durations=5 -v --cov-report html --cov ocx_schema_reader .
+	@pytest --durations=5  --cov-report html --cov ocx_tools .
 
 test-upd:  ## Update the regression tests baseline
 	@pytest --force-regen
-PHONY: test-upd
+
+tu: test-upd
+PHONY: tu
 
 test-cov:  ## Show the test coverage report
 	cmd /c start $(CURDIR)/$(COVDIR)/index.html
 
+tc: test-cov
+.PHONY: tc
+
 PHONY: test-upd, test-cov
 # CHECKS ######################################################################
-lint:	## Run formatters, linters, and static code security scanners bandit and jake
+check-lint:	## Run formatters, linters, and static code security scanners bandit and jake
 	@printf "\n${BLUE}Running black against source and test files...${NC}\n"
 	@black . -v
 	@printf "${BLUE}\nRunning Flake8 against source and test files...${NC}\n"
@@ -96,12 +103,15 @@ lint:	## Run formatters, linters, and static code security scanners bandit and j
 	@printf "${BLUE}\nRunning Jake against installed dependencies...${NC}\n"
 	conda list | jake ddt | grep VULNERABLE
 
-.PHONY: lint
+cl: check-lint
+.PHONY: cl
 
-jake:   ## Detailed report from jake security scanner on all modules installed in the conda environment
+check-jake:   ## Detailed report from jake security scanner on all modules installed in the conda environment
 	@printf "${BLUE}\nRunning Jake against installed dependencies...${NC}\n"
 	conda list | jake ddt
-.PHONY: jake
+
+cj: check-jake
+.PHONY: cj
 
 # DOCUMENTATION ##############################################################
 SPHINXBUILD = python -m sphinx
@@ -110,10 +120,13 @@ SOURCEDIR = "$(CURDIR)/docs/source"
 BUILDDIR =  "$(CURDIR)/docs/build/"
 COVDIR = "htmlcov"
 
-html-serve: ## Open the the html docs built by Sphinx
+doc-serve: ## Open the the html docs built by Sphinx
 	@cmd /c start "$(BUILDDIR)$(SPHINXOPTS)/index.html"
 
-sphinx-help:  ## Sphinx options
+ds: doc-serve
+.PHINY: ds
+
+doc-help:  ## Sphinx options when running make from the docs folder
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 doc: ## Build the html docs using Sphinx. For other Sphinx options, run make in the docs folder
@@ -126,7 +139,7 @@ doc: ## Build the html docs using Sphinx. For other Sphinx options, run make in 
 DIST_FILES := dist/*.tar.gz dist/*.whl
 EXE_FILES := dist/$(PACKAGE).*
 
-build: dist/main.exe  ## Build a bundled package using pyinstaller
+build-exe:   ## Build a bundled package (on windows: an exe file) executable using pyinstaller
 	pyinstaller main.spec
 
 
@@ -134,43 +147,6 @@ bump-dev:  ## Bump the version the next version. All version strings will be upd
 	@bump2version --config-file .bumpversion.cfg -n  part dev --new-version  $($1)
 
 
-# RELEASE #####################################################################
-
-.PHONY: upload
-upload: dist ## Upload the current version to PyPI
-	git diff --name-only --exit-code
-	poetry publish
-	bin/open https://pypi.org/project/$(PACKAGE)
-
-# CLEANUP #####################################################################
-
-.PHONY: clean
-clean:  .clean-test  ## Delete all generated and temporary files
-
-.PHONY: clean-all
-clean-all: clean
-	#rm -rf $(VIRTUAL_ENV)
-
-.PHONY: .clean-install
-.clean-install:
-	find $(PACKAGE) tests -name '*.pyc' -print
-	rm -rf *.egg-info
-
-.PHONY: .clean-test
-.clean-test:
-	@$(RM) .\.pytest_cache\
-
-.PHONY: .clean-docs
-.clean-docs:
-	rm -rf docs/*.png site
-
-.PHONY: .clean-build
-.clean-build:
-	rm -rf *.spec dist build
-
-.PHONY: .clean-log
-.clean-log:
-	rm -rf log/*.log
 
 # HELP ########################################################################
 

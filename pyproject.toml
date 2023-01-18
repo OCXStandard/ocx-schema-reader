@@ -1,8 +1,35 @@
+[project]
+name = "ocx-tools"
+version = "0.1.0"
+description = "Interactive shell utility (CLI) tools for working with the OCX schema"
+authors = ["ocastrup <ole.christian.astrup@dnv.com>"]
+license = "MIT"
+repository = "https://github.com/OCXStandard/ocx-tools"
+documentation = "https://ocx-tools.readthedocs.io/en/latest/index.html"
+readme = "README.md"
+# Classifiers: http://pypi.python.org/pypi?%3Aaction=list_classifiers
+classifiers = [
+    # Development Status :: 1 - Planning
+    # Development Status :: 2 - Pre-Alpha
+    # Development Status :: 3 - Alpha
+    # Development Status :: 4 - Beta
+    # Development Status :: 5 - Production/Stable
+    # Development Status :: 6 - Mature
+    # Development Status :: 7 - Inactive
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+]
+packages = ["ocx_tools"]
+
+[project.scripts]
+ocx-tools = 'main.py:cli'
 [build-system]
-#requires = ["poetry-core>=1.0.0"]
-#build-backend = "poetry.core.masonry.api"
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+# requires = ["setuptools", "wheel"]
+# build-backend = "setuptools.build_meta"
 
 [tool.bandit]
 exclude_dirs = ["tests"]
@@ -10,3 +37,5 @@ skips = [
     "B320", "B410"  # Skip xml vulnerability as we use lxml
 ]
 
+[tool.semantic_release]
+version_variable = "pyproject.toml:version"

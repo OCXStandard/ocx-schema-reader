@@ -1,7 +1,6 @@
 # Project specific
 /.idea/
 /log/
-/docs/build/
 /schema_versions/
 # Python environments
 /.macosenv/
@@ -31,9 +30,8 @@ Icon*
 *.pid
 
 # Generated documentation
-/docs/gen/
-/docs/apidocs/
-/site/
+/docs/build/
+/docs/source/_autosummary
 /*.html
 /docs/*.png
 

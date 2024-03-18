@@ -1,18 +1,22 @@
 #  Copyright (c) 2023.  OCX Consortium https://3docx.org. See the LICENSE
 from __future__ import annotations
-from click_shell import shell
-from click import pass_context, clear, option, secho, Choice
-from tabulate import tabulate
+
 import logging
 from logging import config
+
 import colorlog
+from click import Choice, clear, option, pass_context, secho
+from click_shell import shell
+from tabulate import tabulate
+
 import ocx_tools
-from .schema import schema
-from ocx_tools.schema.parser import OcxSchema
-from .cli_context import GlobalContext
-from ocx_tools.cli import log_config, LOGO_COLOR, INFO_COLOR, ERROR_COLOR, APP
 import ocx_tools.cli
+from ocx_tools.cli import APP, ERROR_COLOR, INFO_COLOR, LOGO_COLOR, log_config
 from ocx_tools.schema import SCHEMA_FOLDER
+from ocx_tools.schema.parser import OcxSchema
+
+from .cli_context import GlobalContext
+from .schema import schema
 
 LOGO = r"""
              ,----..                                    
@@ -55,7 +59,7 @@ def cli(ctx):
     secho("Copyright (c) 2023. OCX Consortium https://3docx.org\n", fg=INFO_COLOR)
     secho(
         f"Effective log level is: {logging.getLevelName(logger.getEffectiveLevel())}",
-        fg=INFO_COLOR
+        fg=INFO_COLOR,
     )
     ctx.obj = GlobalContext(logger, ctx)
     # add tools to the context

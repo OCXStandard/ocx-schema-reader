@@ -2,19 +2,20 @@
 
 from collections import defaultdict
 
-from click_shell import shell
-from click import Choice, prompt
-from click import Path as ClickPath
-from click import argument, option, pass_context, secho
 import click
+from click import Choice
+from click import Path as ClickPath
+from click import argument, option, pass_context, prompt, secho
+from click_shell import shell
 from fuzzywuzzy import fuzz
 from tabulate import tabulate
-from ocx_tools.schema_xml.element import LxmlElement
-from .cli_context import GlobalContext, UrlParamType
 
 import ocx_tools.utils as utils
-from ocx_tools.cli import INFO_COLOR, ERROR_COLOR
+from ocx_tools.cli import ERROR_COLOR, INFO_COLOR
 from ocx_tools.schema import DEFAULT_SCHEMA, SUB_COMMAND
+from ocx_tools.schema_xml.element import LxmlElement
+
+from .cli_context import GlobalContext, UrlParamType
 
 URL = UrlParamType()
 

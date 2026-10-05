@@ -7,6 +7,7 @@ import re
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List
+
 import yaml
 
 
@@ -18,9 +19,9 @@ def root_dir() -> str:
 def current_dir(file: str) -> str:
     """The full path to the folder containing the ``file``
 
-     Args:
-         file: The name of an existing file
-     """
+    Args:
+        file: The name of an existing file
+    """
     return os.path.realpath(os.path.join(os.path.dirname(file), ""))
 
 
@@ -139,7 +140,7 @@ def number_table_rows(table: dict, first_index: int = 0) -> Dict:
 
 
 def find_replace_multi(string, dictionary) -> str:
-    """ Substitute every value in a dict if it matches"""
+    """Substitute every value in a dict if it matches"""
     for item in dictionary.keys():
         # sub item for item's paired value in string
         string = re.sub(item, dictionary[item], string)

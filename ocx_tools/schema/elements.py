@@ -210,7 +210,7 @@ class OcxChildElement:
         """
         lower, upper = self._cardinality
         if upper == "unbounded":
-            upper = "\u221E"  # UTF-8 Infinity symbol
+            upper = "\u221e"  # UTF-8 Infinity symbol
         return f"[{lower}, {upper}]"
 
     def get_name(self) -> str:
@@ -585,7 +585,7 @@ class OcxGlobalElement:
         """
         lower, upper = self._cardinality
         if upper == "unbounded":
-            upper = "\u221E"  # UTF-8 Infinity symbol
+            upper = "\u221e"  # UTF-8 Infinity symbol
         return f"[{lower}, {upper}]"
 
     def is_reference(self) -> bool:

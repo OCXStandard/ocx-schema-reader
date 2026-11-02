@@ -2,7 +2,7 @@
 
 """Expose package-wide elements."""
 
-__version__ = '0.0.0.dev1'
+__version__ = "0.0.0.dev1"
 
 
 """ Examples of valid version strings according :pep:`440#version-scheme`:

@@ -519,7 +519,6 @@ class LxmlElement:
     @staticmethod
     # Finding the assertion in the code.
     def find_assertion(element: Element, namespace="*") -> Union[str, None]:
-
         """Find any assertions under the ``element``
 
         Args:

@@ -1,10 +1,10 @@
 #  Copyright (c) 2022.  OCX Consortium https://3docx.org. See the LICENSE
 
-from typing import Any, DefaultDict, Dict
 from logging import Logger
-import validators
+from typing import Any, DefaultDict, Dict
 
 import click
+import validators
 
 
 class UrlParamType(click.ParamType):

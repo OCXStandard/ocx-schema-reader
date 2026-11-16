@@ -11,18 +11,15 @@ from requests import HTTPError
 
 from ocx_tools.schema import (
     DEFAULT_SCHEMA,
+    PROCESS_SCHEMA_TYPES,
     SCHEMA_FOLDER,
     W3C_SCHEMA_BUILT_IN_TYPES,
-    PROCESS_SCHEMA_TYPES,
 )
-from .data_classes import SchemaSummary, SchemaType
-from .elements import (
-    OcxAttribute,
-    OcxChildElement,
-    OcxGlobalElement,
-)
-from .helpers import SchemaHelper
 from ocx_tools.schema_xml.parse import LxmlElement, LxmlParser
+
+from .data_classes import SchemaSummary, SchemaType
+from .elements import OcxAttribute, OcxChildElement, OcxGlobalElement
+from .helpers import SchemaHelper
 
 
 class OcxSchema:
